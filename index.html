@@ -185,10 +185,13 @@
                     <button class="btn btn-primary mt-4" id="btn-add-project">+ Add New Project</button>
                 </div>
                 <div class="tab-content" id="export-tab">
-                    <p class="mb-2">Copy the code below and replace the contents of your <code>data.js</code> file.</p>
+                    <p class="mb-2">Click below to download the updated file, then drag it into your VS Code to replace the old one!</p>
                     <div class="code-export-wrap">
                         <pre id="code-export-pre"></pre>
-                        <button class="btn btn-primary btn-sm" id="btn-copy-code">Copy to Clipboard</button>
+                        <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem;">
+                            <button class="btn btn-glass btn-sm" id="btn-copy-code">Copy Code</button>
+                            <button class="btn btn-primary btn-sm" id="btn-download-data">Download data.js</button>
+                        </div>
                     </div>
                 </div>
             </div>

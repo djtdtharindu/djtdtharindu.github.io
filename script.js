@@ -475,18 +475,45 @@
             navigator.clipboard.writeText($('code-export-pre').textContent);
             const btn = $('btn-copy-code');
             btn.textContent = '✅ Copied!';
-            setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+            setTimeout(() => btn.textContent = 'Copy Code', 2000);
         });
+
+        const downloadBtn = $('btn-download-data');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                const code = $('code-export-pre').textContent;
+                const blob = new Blob([code], { type: 'text/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'data.js';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
 
         // Add a "Apply & Close" button to the modal
         const applyBtn = document.createElement('button');
         applyBtn.className = 'btn btn-primary mt-4';
         applyBtn.style.width = '100%';
-        applyBtn.textContent = 'Apply Changes Temporarily (Preview)';
+        applyBtn.textContent = 'Apply Changes Temporarily (Live Preview)';
         applyBtn.onclick = () => {
-            // Hot-swap the live data (requires global exposure)
-            location.reload(); // Simplest way since data.js is hardcoded, but user can copy code first
+            // Hot-swap the live data without reloading!
+            Object.assign(D, localData);
+            
+            // Re-render the UI dynamically
+            buildNav();
+            buildHero();
+            buildAbout();
+            buildExperience();
+            buildProjects();
+            buildActivities();
+            buildContact();
+            buildFooter();
+            
+            modal.style.display = 'none';
         };
+        $('export-tab').appendChild(applyBtn);
     }
 
     // ── BOOT ──────────────────────────────────────────────
