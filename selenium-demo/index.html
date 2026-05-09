@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selenium eBay Automation Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060f;--panel:rgba(255,255,255,.03);--border:rgba(255,255,255,.07);--accent:#6366f1;--accent2:#ec4899;--grad:linear-gradient(135deg,#6366f1,#ec4899);--text:#f0f2f5;--muted:#8d95a0;--success:#22c55e;--error:#ef4444;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.3;pointer-events:none;z-index:0}
+.o1{width:400px;height:400px;background:#6366f1;top:-100px;right:-100px}
+.o2{width:300px;height:300px;background:#ec4899;bottom:-50px;left:-50px}
+header{background:rgba(6,6,15,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100}
+.logo-icon{width:38px;height:38px;background:var(--grad);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+header h1{font-family:'Space Grotesk',sans-serif;font-size:1.2rem}
+.layout{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;padding:1.5rem 2rem;position:relative;z-index:1;max-width:1300px;margin:0 auto}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;backdrop-filter:blur(10px);overflow:hidden}
+.ph{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;display:flex;align-items:center;gap:.5rem;color:var(--muted)}
+.pb{padding:1.2rem}
+/* Controls */
+.step-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem}
+.step{display:flex;align-items:center;gap:.8rem;padding:.7rem .9rem;border-radius:9px;background:rgba(255,255,255,.02);border:1px solid transparent;transition:.2s;cursor:default;font-size:.88rem}
+.step.active{border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.08)}
+.step.done{border-color:rgba(34,197,94,.2);background:rgba(34,197,94,.05);color:var(--muted)}
+.step.error{border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.05);color:#ef4444}
+.step-num{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+.step.active .step-num{background:var(--accent);color:#fff}
+.step.done .step-num{background:var(--success);color:#fff}
+.btn{padding:.65rem 1.4rem;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:.4rem;width:100%;justify-content:center}
+.btn-primary{background:var(--grad);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(99,102,241,.35)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-reset{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);margin-top:.6rem}
+/* Mock browser */
+.browser-frame{background:#111;border-radius:12px;overflow:hidden;height:100%}
+.browser-chrome{background:#1a1a2e;padding:.6rem 1rem;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.dots2{display:flex;gap:.4rem}
+.d{width:10px;height:10px;border-radius:50%}
+.d.r{background:#ff5f56}.d.y{background:#ffbd2e}.d.g{background:#27c93f}
+.address-bar{flex:1;background:rgba(255,255,255,.06);border-radius:5px;padding:.3rem .8rem;font-size:.8rem;color:var(--muted);font-family:monospace;transition:.3s}
+.browser-body{padding:1.2rem;min-height:480px;position:relative;overflow:hidden}
+/* eBay mock content */
+.ebay-header{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}
+.ebay-logo{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,#e53238,#0064d2,#f5af02,#86b817);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.search-bar-mock{flex:1;display:flex;border-radius:6px;overflow:hidden;border:2px solid transparent;transition:.3s}
+.search-bar-mock.focused{border-color:var(--accent)}
+.search-input-mock{flex:1;background:rgba(255,255,255,.08);border:none;padding:.5rem .8rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;outline:none}
+.search-btn-mock{background:#3665f3;border:none;padding:.5rem 1rem;color:#fff;cursor:default;font-size:.85rem}
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.item-card{background:rgba(255,255,255,.04);border:2px solid transparent;border-radius:8px;padding:.8rem;transition:.3s;cursor:default}
+.item-card.highlighted{border-color:rgba(99,102,241,.6);background:rgba(99,102,241,.08);box-shadow:0 0 20px rgba(99,102,241,.2)}
+.item-card.clicked{border-color:var(--accent2);transform:scale(0.97)}
+.item-img{width:100%;height:70px;background:rgba(255,255,255,.05);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:.5rem}
+.item-title{font-size:.8rem;color:var(--text);margin-bottom:.3rem;line-height:1.3}
+.item-price{font-size:.9rem;font-weight:700;color:var(--accent2)}
+/* Cart page */
+.cart-page{display:none;padding:.5rem}
+.cart-item{display:flex;gap:1rem;align-items:center;padding:1rem;background:rgba(255,255,255,.04);border-radius:8px;margin-bottom:.8rem;border:1px solid var(--border)}
+.cart-img{width:60px;height:60px;background:rgba(99,102,241,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+.cart-info h4{font-size:.9rem;margin-bottom:.2rem}
+.cart-info p{color:var(--success);font-weight:700}
+.cart-total{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:1rem;text-align:center}
+.cart-total h3{font-family:'Space Grotesk',sans-serif;color:var(--success);font-size:1.4rem}
+/* Log */
+.log-panel{margin-top:1.5rem;grid-column:1/-1}
+.log-body{padding:.8rem 1.2rem;font-family:'Courier New',monospace;font-size:.83rem;height:130px;overflow-y:auto;background:rgba(0,0,0,.3)}
+.log-body::-webkit-scrollbar{width:3px}.log-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.ll{margin-bottom:.2rem}
+.ll.cmd{color:#a5b4fc}.ll.ok{color:var(--success)}.ll.err{color:var(--error)}.ll.info{color:var(--muted)}
+/* Overlay highlight ring */
+.click-ring{position:absolute;width:30px;height:30px;border:2px solid var(--accent2);border-radius:50%;pointer-events:none;transition:.3s;opacity:0}
+.click-ring.show{opacity:1;animation:ripple .6s ease forwards}
+@keyframes ripple{0%{transform:scale(1);opacity:1}100%{transform:scale(2.5);opacity:0}}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.results-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div>
+<header>
+    <div class="logo-icon">🤖</div>
+    <div><h1>Selenium eBay Automation Demo</h1></div>
+    <span style="margin-left:auto;font-size:.82rem;color:var(--muted)">Visual Browser Automation Simulator</span>
+</header>
+
+<div class="layout">
+    <!-- Controls -->
+    <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="panel">
+            <div class="ph">⚙️ Automation Steps</div>
+            <div class="pb">
+                <div class="step-list" id="step-list"></div>
+                <button class="btn btn-primary" id="run-btn" onclick="runAutomation()">▶ Run Automation</button>
+                <button class="btn btn-reset" onclick="resetAll()">↺ Reset</button>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="ph">📊 Bot Status</div>
+            <div class="pb">
+                <div style="display:flex;flex-direction:column;gap:.6rem;font-size:.87rem">
+                    <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Status</span><span id="bot-status" style="color:var(--success)">Ready</span></div>
+                    <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Current Step</span><span id="bot-step">—</span></div>
+                    <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Items Found</span><span id="bot-items">—</span></div>
+                    <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Action</span><span id="bot-action" style="color:#a5b4fc">—</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Browser viewport -->
+    <div class="panel browser-frame">
+        <div class="browser-chrome">
+            <div class="dots2"><div class="d r"></div><div class="d y"></div><div class="d g"></div></div>
+            <div class="address-bar" id="address-bar">about:blank</div>
+        </div>
+        <div class="browser-body" id="browser-body">
+            <div id="idle-msg" style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:1rem;color:var(--muted)">
+                <div style="font-size:3rem">🤖</div>
+                <div style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem">Browser awaiting instructions</div>
+                <div style="font-size:.88rem">Click "Run Automation" to start</div>
+            </div>
+            <!-- eBay Search Page -->
+            <div id="page-search" style="display:none">
+                <div class="ebay-header">
+                    <div class="ebay-logo">ebay</div>
+                    <div class="search-bar-mock" id="search-bar-mock">
+                        <input class="search-input-mock" id="search-input-mock" readonly placeholder="">
+                        <button class="search-btn-mock">Search</button>
+                    </div>
+                </div>
+                <div style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem" id="results-label"></div>
+                <div class="results-grid" id="results-grid"></div>
+            </div>
+            <!-- Cart Page -->
+            <div class="cart-page" id="page-cart">
+                <h3 style="font-family:'Space Grotesk',sans-serif;margin-bottom:1rem">🛒 Shopping Cart</h3>
+                <div class="cart-item">
+                    <div class="cart-img">📱</div>
+                    <div class="cart-info">
+                        <h4>Samsung Galaxy S24 Ultra 256GB</h4>
+                        <p>$899.00</p>
+                    </div>
+                </div>
+                <div class="cart-total">
+                    <div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">Order Total</div>
+                    <h3>$899.00</h3>
+                    <div style="color:var(--success);font-size:.82rem;margin-top:.3rem">✅ Item successfully added to cart!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log -->
+    <div class="panel log-panel">
+        <div class="ph">📋 WebDriver Console Log</div>
+        <div class="log-body" id="log-body"></div>
+    </div>
+</div>
+
+<script>
+const STEPS = [
+    { label: 'Initialize Chrome WebDriver' },
+    { label: 'Navigate to ebay.com' },
+    { label: 'Locate search input (#gh-ac)' },
+    { label: 'Type "Mobile Phone"' },
+    { label: 'Click search button' },
+    { label: 'Wait for results (ExpectedConditions)' },
+    { label: 'Highlight first listing' },
+    { label: 'Click first listing' },
+    { label: 'Click "Add to Cart"' },
+    { label: 'Verify cart — DONE' }
+];
+
+const PRODUCTS = [
+    { emoji:'📱', title:'Samsung Galaxy S24 Ultra 256GB', price:'$899.00' },
+    { emoji:'📱', title:'iPhone 15 Pro Max 512GB', price:'$1,149.00' },
+    { emoji:'📱', title:'Google Pixel 9 Pro 128GB', price:'$749.00' },
+    { emoji:'📱', title:'OnePlus 12 256GB', price:'$549.00' },
+    { emoji:'📱', title:'Xiaomi 14 Ultra 512GB', price:'$699.00' },
+    { emoji:'📱', title:'Sony Xperia 1 VI', price:'$1,299.00' },
+];
+
+let running = false;
+
+function renderSteps(activeIdx = -1, doneUpTo = -1) {
+    document.getElementById('step-list').innerHTML = STEPS.map((s, i) => {
+        let cls = '';
+        if (i === activeIdx) cls = 'active';
+        else if (i <= doneUpTo) cls = 'done';
+        return `<div class="step ${cls}">
+            <div class="step-num">${i <= doneUpTo ? '✓' : i+1}</div>
+            <span>${s.label}</span>
+        </div>`;
+    }).join('');
+}
+
+function log(msg, type='info') {
+    const lb = document.getElementById('log-body');
+    const d = document.createElement('div');
+    d.className = `ll ${type}`;
+    d.textContent = `[${new Date().toLocaleTimeString()}]  ${msg}`;
+    lb.appendChild(d);
+    lb.scrollTop = lb.scrollHeight;
+}
+
+function setStatus(status, step, items, action) {
+    document.getElementById('bot-status').textContent = status;
+    if (step !== undefined) document.getElementById('bot-step').textContent = step;
+    if (items !== undefined) document.getElementById('bot-items').textContent = items;
+    if (action !== undefined) document.getElementById('bot-action').textContent = action;
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function showPage(id) {
+    ['page-search','page-cart'].forEach(p => {
+        document.getElementById(p).style.display = 'none';
+    });
+    document.getElementById('idle-msg').style.display = 'none';
+    if (id) document.getElementById(id).style.display = 'block';
+}
+
+function typeText(el, text, ms=60) {
+    return new Promise(async resolve => {
+        el.value = '';
+        for (const ch of text) { el.value += ch; await delay(ms); }
+        resolve();
+    });
+}
+
+async function runAutomation() {
+    if (running) return;
+    running = true;
+    document.getElementById('run-btn').disabled = true;
+    document.getElementById('log-body').innerHTML = '';
+
+    // Step 0 — init
+    renderSteps(0, -1);
+    setStatus('Running', '1/10', '—', 'Initializing');
+    log('Starting ChromeDriver...', 'cmd');
+    log('ChromeDriver 124.0.6367.82 initialized', 'ok');
+    await delay(900);
+
+    // Step 1 — navigate
+    renderSteps(1, 0);
+    setStatus('Running', '2/10', '—', 'Navigating');
+    log('driver.get("https://www.ebay.com")', 'cmd');
+    document.getElementById('address-bar').textContent = 'https://www.ebay.com';
+    showPage('page-search');
+    document.getElementById('results-label').textContent = '';
+    document.getElementById('results-grid').innerHTML = '';
+    document.getElementById('search-input-mock').value = '';
+    log('Page loaded: eBay Homepage', 'ok');
+    await delay(900);
+
+    // Step 2 — locate input
+    renderSteps(2, 1);
+    setStatus('Running', '3/10', '—', 'Locating element');
+    log('WebDriverWait.until(presenceOf(By.id("gh-ac")))', 'cmd');
+    document.getElementById('search-bar-mock').classList.add('focused');
+    log('Element found: <input id="gh-ac">', 'ok');
+    await delay(700);
+
+    // Step 3 — type
+    renderSteps(3, 2);
+    setStatus('Running', '4/10', '—', 'Typing text');
+    log('searchBox.sendKeys("Mobile Phone")', 'cmd');
+    await typeText(document.getElementById('search-input-mock'), 'Mobile Phone', 80);
+    log('"Mobile Phone" typed successfully', 'ok');
+    await delay(500);
+
+    // Step 4 — click search
+    renderSteps(4, 3);
+    setStatus('Running', '5/10', '—', 'Clicking search');
+    log('searchButton.click()', 'cmd');
+    document.getElementById('search-bar-mock').classList.remove('focused');
+    document.getElementById('address-bar').textContent = 'https://www.ebay.com/sch/i.html?_nkw=Mobile+Phone';
+    log('Search button clicked', 'ok');
+    await delay(600);
+
+    // Step 5 — wait for results
+    renderSteps(5, 4);
+    setStatus('Running', '6/10', `${PRODUCTS.length} items`, 'Waiting for results');
+    log('WebDriverWait.until(presenceOf(By.cssSelector(".s-item__title")))', 'cmd');
+    document.getElementById('results-label').textContent = `About 2,847,291 results for "Mobile Phone"`;
+    document.getElementById('results-grid').innerHTML = PRODUCTS.map((p,i) =>
+        `<div class="item-card" id="item-${i}">
+            <div class="item-img">${p.emoji}</div>
+            <div class="item-title">${p.title}</div>
+            <div class="item-price">${p.price}</div>
+        </div>`
+    ).join('');
+    log(`Results loaded: ${PRODUCTS.length} items visible`, 'ok');
+    setStatus('Running', '6/10', `${PRODUCTS.length}`, 'Results loaded');
+    await delay(900);
+
+    // Step 6 — highlight first
+    renderSteps(6, 5);
+    setStatus('Running', '7/10', `${PRODUCTS.length}`, 'Highlighting first item');
+    log('items.get(0) → highlighting element...', 'cmd');
+    document.getElementById('item-0').classList.add('highlighted');
+    log('First listing highlighted', 'ok');
+    await delay(900);
+
+    // Step 7 — click
+    renderSteps(7, 6);
+    setStatus('Running', '8/10', `${PRODUCTS.length}`, 'Clicking listing');
+    log(`driver.get(items.get(0).getAttribute("href"))`, 'cmd');
+    document.getElementById('item-0').classList.add('clicked');
+    document.getElementById('address-bar').textContent = 'https://www.ebay.com/itm/Samsung-Galaxy-S24.../134829501';
+    await delay(400);
+    document.getElementById('item-0').classList.remove('clicked','highlighted');
+    log('Navigated to item detail page', 'ok');
+    await delay(700);
+
+    // Step 8 — add to cart
+    renderSteps(8, 7);
+    setStatus('Running', '9/10', `${PRODUCTS.length}`, 'Adding to cart');
+    log('WebDriverWait.until(clickable(By.id("isCartBtn_btn")))', 'cmd');
+    log('addToCartBtn.click()', 'cmd');
+    await delay(900);
+
+    // Step 9 — verify cart
+    renderSteps(9, 8);
+    setStatus('✅ Complete', '10/10', `${PRODUCTS.length}`, 'Verifying cart');
+    log('Cart verification: item present ✓', 'ok');
+    document.getElementById('address-bar').textContent = 'https://cart.ebay.com/';
+    showPage('page-cart');
+    await delay(500);
+    renderSteps(-1, 9);
+    log('🎉 Automation complete! Item in cart.', 'ok');
+    setStatus('✅ Done', 'Complete', `${PRODUCTS.length}`, 'Success');
+    running = false;
+    document.getElementById('run-btn').disabled = false;
+    document.getElementById('run-btn').innerHTML = '↺ Run Again';
+}
+
+function resetAll() {
+    running = false;
+    renderSteps(-1, -1);
+    setStatus('Ready','—','—','—');
+    document.getElementById('address-bar').textContent = 'about:blank';
+    document.getElementById('log-body').innerHTML = '';
+    document.getElementById('run-btn').disabled = false;
+    document.getElementById('run-btn').innerHTML = '▶ Run Automation';
+    showPage(null);
+    document.getElementById('idle-msg').style.display = 'flex';
+}
+
+renderSteps(-1,-1);
+</script>
+</body>
+</html>

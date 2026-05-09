@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Studio Ultimate — Motion Art Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;700;900&family=Roboto:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030306;--panel:rgba(8,8,14,0.92);
+  --accent:#00f2fe;--accent2:#a855f7;
+  --border:rgba(255,255,255,0.08);
+  --text-dim:rgba(255,255,255,0.33);--text-mid:rgba(255,255,255,0.62);
+  --input-bg:rgba(0,0,0,0.55);--radius:15px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{display:flex;height:100vh;overflow:hidden;background:var(--bg);color:#fff;font-family:'Outfit',sans-serif}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:99px}
+
+/* SIDEBAR */
+.sidebar{width:440px;min-width:440px;background:var(--panel);backdrop-filter:blur(50px);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;box-shadow:40px 0 100px rgba(0,0,0,0.95);z-index:100}
+.sidebar-header{padding:2.4rem 1.8rem 1.8rem;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.2)}
+.brand{font-size:2.4rem;font-weight:800;letter-spacing:-2px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.brand-sub{font-size:.68rem;color:var(--accent);text-transform:uppercase;letter-spacing:.35rem;font-weight:700;margin-top:6px;opacity:0.8}
+.sidebar-scroll{flex:1;overflow-y:auto;padding:0 0 1.5rem}
+
+/* TABS */
+.lyric-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.015)}
+.ltab{flex:1;padding:1.1rem;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.12rem;cursor:pointer;border:none;background:transparent;color:var(--text-dim);font-family:inherit;transition:.25s;text-align:center;position:relative}
+.ltab:hover{color:var(--text-mid);background:rgba(255,255,255,0.03)}
+.ltab.on{color:var(--accent)}
+.ltab.on::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:3px;background:var(--accent);border-radius:10px 10px 0 0;box-shadow:0 -5px 15px var(--accent)}
+.tab-panel{display:none;padding:1.4rem 1.8rem;animation:fadeIn .3s ease}
+.tab-panel.on{display:flex;flex-direction:column;gap:1.2rem}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* COMPONENTS */
+details{border-bottom:1px solid var(--border)}
+summary{padding:1.2rem 1.8rem;font-size:.62rem;font-weight:800;color:var(--text-dim);text-transform:uppercase;letter-spacing:.2rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;transition:color .2s}
+summary:hover{color:#fff}
+details[open] summary{color:var(--accent)}
+summary::after{content:'＋';font-size:1rem;color:var(--accent);font-weight:300;transition:.3s}
+details[open] summary::after{content:'－';transform:rotate(180deg)}
+.sec{padding:.2rem 0 1.4rem;display:flex;flex-direction:column;gap:1.1rem}
+
+label.lbl{font-size:.6rem;font-weight:800;color:var(--text-dim);text-transform:uppercase;letter-spacing:.18rem;display:block;margin-bottom:6px}
+input[type=file],textarea,select,input[type=text]{background:var(--input-bg);border:1px solid var(--border);color:#fff;padding:1rem 1.1rem;border-radius:var(--radius);font-family:inherit;outline:none;width:100%;transition:.3s;font-size:.95rem}
+input[type=file]:hover,textarea:hover,select:hover,input[type=text]:hover{border-color:rgba(255,255,255,0.2)}
+textarea:focus,select:focus,input[type=text]:focus{border-color:var(--accent);background:rgba(0,0,0,0.7);box-shadow:0 0 20px rgba(0,242,254,0.1)}
+textarea{height:160px;resize:none;line-height:1.6}
+input[type=color]{height:48px;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;padding:3px;width:100%}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;height:6px;border-radius:10px;background:rgba(255,255,255,0.1)}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+.tbtn{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-mid);padding:.7rem .5rem;border-radius:10px;font-size:.68rem;font-weight:700;cursor:pointer;transition:.2s;text-transform:uppercase;letter-spacing:.05rem}
+.tbtn:hover{background:var(--accent);color:#000;border-color:var(--accent);transform:translateY(-2px)}
+.tbtn.active-btn{background:var(--accent);color:#000}
+
+.btn{width:100%;padding:1.3rem;border-radius:18px;font-weight:800;font-size:1.05rem;cursor:pointer;border:none;color:white;transition:.4s cubic-bezier(0.4, 0, 0.2, 1);display:flex;align-items:center;justify-content:center;gap:.8rem;text-transform:uppercase;letter-spacing:.12rem;font-family:inherit}
+.btn:disabled{opacity:.2;cursor:not-allowed}
+.btn-play{background:linear-gradient(135deg,#00f2fe,#4facfe);color:#000;box-shadow:0 15px 35px rgba(0,242,254,0.25)}
+.btn-record{background:linear-gradient(135deg,#f43f5e,#fb7185);box-shadow:0 15px 35px rgba(244,63,94,0.25)}
+.btn-ghost{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-mid);font-size:.9rem}
+.btn-sync{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text-dim);font-size:.85rem}
+.btn-sync.active{background:#f43f5e;border-color:#f43f5e;color:#fff;animation:pulse 2s infinite}
+
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(244,63,94,.4)}70%{box-shadow:0 0 0 12px rgba(244,63,94,0)}100%{box-shadow:0 0 0 0 rgba(244,63,94,0)}}
+@keyframes playPulse{0%{box-shadow:0 0 0 0 rgba(0,242,254,0.4)}70%{box-shadow:0 0 0 20px rgba(0,242,254,0)}100%{box-shadow:0 0 0 0 rgba(0,242,254,0)}}
+.btn-play.ready{animation:playPulse 2.5s infinite}
+
+.sidebar-footer{padding:1.5rem 1.8rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.9rem;flex-shrink:0;background:rgba(0,0,0,0.1)}
+.download-btn{display:none;background:#10b981;color:#fff;text-decoration:none;border-radius:var(--radius);padding:1.2rem;text-align:center;font-weight:800;font-size:.9rem;letter-spacing:.1rem;text-transform:uppercase}
+.status-bar{display:flex;align-items:center;gap:10px;padding:.7rem 1.2rem;background:rgba(0,0,0,0.5);border-top:1px solid var(--border);flex-shrink:0}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#333;transition:.3s}
+.status-dot.active{background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.status-dot.recording{background:#f43f5e;box-shadow:0 0 10px #f43f5e;animation:pulse 1s infinite}
+.status-text{font-size:.72rem;color:var(--text-mid);font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.progress-wrap{height:4px;background:rgba(255,255,255,0.08);border-radius:99px;cursor:pointer}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:.1s}
+.progress-time{display:flex;justify-content:space-between;font-size:.62rem;color:var(--text-dim);margin-top:6px;font-weight:700}
+
+.slider-group{display:flex;flex-direction:column;gap:6px}
+.slider-label{display:flex;justify-content:space-between;font-size:.6rem;color:var(--text-dim);font-weight:800;text-transform:uppercase;letter-spacing:.12rem}
+.slider-val{color:var(--accent)}
+
+/* LYRIC LISTS */
+.line-editor{max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,0.2)}
+.line-row{display:flex;align-items:center;gap:10px;padding:.7rem 1rem;border-bottom:1px solid var(--border);transition:.2s;cursor:pointer}
+.line-row:hover{background:rgba(255,255,255,0.04)}
+.line-row.line-active{background:rgba(0,242,254,0.08);border-left:3px solid var(--accent)}
+.line-ts{font-size:.7rem;color:var(--accent);font-family:monospace;min-width:60px;background:transparent;border:none;outline:none}
+.line-txt{flex:1;font-size:.9rem;color:#fff;background:transparent;border:none;outline:none;font-family:inherit}
+.line-del{font-size:.8rem;color:var(--text-dim);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:.2s}
+.line-del:hover{background:rgba(244,63,94,0.15);color:#f43f5e}
+
+.lyric-preview{max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:12px;padding:.5rem 0}
+.preview-item{padding:.6rem 1.4rem;font-size:.9rem;color:var(--text-dim);transition:.2s;cursor:pointer;line-height:1.5}
+.preview-item.cur{color:#fff;background:rgba(0,242,254,0.08);border-left:3px solid var(--accent)}
+
+/* CHIPS */
+.chip-group{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:.6rem 1rem;border-radius:99px;font-size:.68rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text-mid);transition:.2s;text-transform:uppercase;letter-spacing:.08rem}
+.chip:hover{border-color:rgba(255,255,255,0.25);color:#fff}
+.chip.on{background:rgba(0,242,254,0.15);border-color:var(--accent);color:var(--accent);box-shadow:0 0 15px rgba(0,242,254,0.1)}
+
+.align-group{display:flex;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.align-btn{flex:1;padding:.8rem;text-align:center;cursor:pointer;border:none;background:transparent;color:var(--text-dim);font-size:.9rem;transition:.2s}
+.align-btn.on{background:rgba(0,242,254,0.1);color:var(--accent)}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:rgba(255,255,255,0.1);border-radius:99px;transition:.3s;border:1px solid var(--border)}
+.toggle input:checked+.toggle-track{background:var(--accent);border-color:var(--accent)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.3s}
+.toggle input:checked~.toggle-thumb{transform:translateX(20px)}
+
+.bgs-group{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bgs{padding:.9rem .4rem;border:1px solid var(--border);border-radius:12px;text-align:center;font-size:.6rem;font-weight:800;cursor:pointer;color:var(--text-dim);background:rgba(255,255,255,0.03);transition:.2s;text-transform:uppercase;letter-spacing:.1rem}
+.bgs.on{border-color:var(--accent);color:var(--accent);background:rgba(0,242,254,0.08);box-shadow:0 0 15px rgba(0,242,254,0.1)}
+.bgs-icon{font-size:1.2rem;display:block;margin-bottom:5px}
+
+/* VIEWPORT */
+.viewport{flex:1;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+canvas{width:100%;height:100%;object-fit:contain;display:block}
+.ai-thinking{display:none;position:absolute;top:1.5rem;right:1.5rem;background:rgba(168,85,247,0.2);border:1px solid rgba(168,85,247,0.4);padding:.7rem 1.4rem;border-radius:99px;font-size:.75rem;color:#a855f7;font-weight:800;backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,0.5);animation:glowPulse 2s infinite}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(168,85,247,0.2)}50%{box-shadow:0 0 40px rgba(168,85,247,0.4)}}
+.ai-thinking.show{display:block}
+.kbd{background:rgba(255,255,255,0.12);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.65rem;font-family:monospace;color:var(--accent)}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div>
+      <div class="brand">Nova Ultimate</div>
+      <div class="brand-sub">Premium Motion Studio</div>
+    </div>
+  </div>
+
+  <div class="lyric-tabs">
+    <button class="ltab on" id="tab-btn-content" onclick="switchTab('content')">Content</button>
+    <button class="ltab" id="tab-btn-style" onclick="switchTab('style')">Style</button>
+    <button class="ltab" id="tab-btn-engine" onclick="switchTab('engine')">Engine</button>
+    <button class="ltab" id="tab-btn-forge" onclick="switchTab('forge')">Forge</button>
+  </div>
+
+  <div class="sidebar-scroll">
+
+    <!-- ══ TAB: CONTENT ══ -->
+    <div class="tab-panel on" id="tab-content">
+      <div class="group">
+        <label class="lbl">Master Track</label>
+        <input type="file" id="audioFile" accept="audio/*">
+        <div id="progressSection" style="display:none;margin-top:1rem">
+          <div class="progress-wrap" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-time"><span id="timeNow">0:00</span><span id="timeDur">0:00</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <label class="lbl">Lyric Content</label>
+        <textarea id="lyricsInput" placeholder="Paste lyrics or LRC here..."></textarea>
+        <div class="row3" style="margin-top:0.8rem">
+          <button class="tbtn" onclick="autoAdjustLyrics()">✨ Format</button>
+          <button class="tbtn" onclick="autoSyncLyrics()" title="Distribute evenly">⚡ Auto Sync</button>
+          <button class="tbtn" onclick="clearTimestamps()">🗑️ Clear</button>
+          <button class="tbtn" onclick="nudgeLyrics(-0.2)">⏪ -0.2s</button>
+          <button class="tbtn" onclick="nudgeLyrics(0.2)">⏩ +0.2s</button>
+          <button class="tbtn" onclick="exportLRC()">📥 LRC</button>
+        </div>
+        <button class="btn btn-sync" id="syncBtn" style="margin-top:1rem">● Live Sync Stage &nbsp;<span class="kbd">Space</span></button>
+      </div>
+
+      <details open>
+        <summary>Timeline & Preview</summary>
+        <div class="sec">
+          <div class="line-editor" id="lineEditor"></div>
+          <div class="row">
+            <button class="tbtn" onclick="addBlankLine()">+ Add Line</button>
+            <button class="tbtn" onclick="sortByTime()">↕ Sort Time</button>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ══ TAB: STYLE ══ -->
+    <div class="tab-panel" id="tab-style">
+      <details open>
+        <summary>Typography</summary>
+        <div class="sec">
+          <div class="row">
+            <div>
+              <label class="lbl">Font</label>
+              <select id="fontFamily">
+                <option value="'Outfit', sans-serif">Outfit</option>
+                <option value="'Inter', sans-serif">Inter</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
+                <option value="'Playfair Display', serif">Playfair Display</option>
+                <option value="'Montserrat', sans-serif">Montserrat</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Weight</label>
+              <select id="fontWeight">
+                <option value="300">Light</option>
+                <option value="400">Regular</option>
+                <option value="600">Bold</option>
+                <option value="800" selected>Black</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="slider-group">
+              <div class="slider-label"><span>Size</span><span class="slider-val" id="v_fs">100</span></div>
+              <input type="range" id="fontSize" min="30" max="250" value="100" oninput="v_fs.innerText=this.value">
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Spacing</span><span class="slider-val" id="v_ls">0</span></div>
+              <input type="range" id="letterSpacing" min="-10" max="60" value="0" oninput="v_ls.innerText=this.value">
+            </div>
+          </div>
+          <div class="row">
+            <div><label class="lbl">Text</label><input type="color" id="textColor" value="#ffffff"></div>
+            <div><label class="lbl">Stroke</label><input type="color" id="strokeColor" value="#000000"></div>
+          </div>
+          <div class="row">
+            <div class="slider-group">
+              <div class="slider-label"><span>Stroke W</span><span class="slider-val" id="v_sk">0</span></div>
+              <input type="range" id="textStroke" min="0" max="25" value="0" oninput="v_sk.innerText=this.value">
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Y Offset</span><span class="slider-val" id="v_ypos">0</span></div>
+              <input type="range" id="textYPos" min="-450" max="450" value="0" oninput="v_ypos.innerText=this.value">
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details open>
+        <summary>Layout & Effects</summary>
+        <div class="sec">
+          <div class="row">
+            <div>
+              <label class="lbl">Alignment</label>
+              <div class="align-group">
+                <button class="align-btn" id="align-left" onclick="setAlign('left')">⬅</button>
+                <button class="align-btn on" id="align-center" onclick="setAlign('center')">⬛</button>
+                <button class="align-btn" id="align-right" onclick="setAlign('right')">➡</button>
+              </div>
+            </div>
+            <div>
+              <label class="lbl">Shadow</label>
+              <select id="shadowMode" onchange="textShadow=this.value">
+                <option value="none">None</option>
+                <option value="soft">Soft Deep</option>
+                <option value="hard">Hard Retro</option>
+                <option value="glow">Neon Glow</option>
+                <option value="long">Long Shadow</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="lbl">Text Background</label>
+            <div class="bgs-group">
+              <button class="bgs on" onclick="setBgStyle(this,'none')"><span class="bgs-icon">✕</span>None</button>
+              <button class="bgs" onclick="setBgStyle(this,'pill')"><span class="bgs-icon">⬭</span>Pill</button>
+              <button class="bgs" onclick="setBgStyle(this,'box')"><span class="bgs-icon">▬</span>Box</button>
+              <button class="bgs" onclick="setBgStyle(this,'bar')"><span class="bgs-icon">━</span>Bar</button>
+            </div>
+          </div>
+          <div class="row" id="bgColorRow" style="display:none">
+            <div><label class="lbl">BG Color</label><input type="color" id="textBgColor" value="#000000"></div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Opacity</span><span class="slider-val" id="v_bgop">0.6</span></div>
+              <input type="range" id="textBgOpacity" min="0" max="1" step="0.05" value="0.6" oninput="v_bgop.innerText=parseFloat(this.value).toFixed(2)">
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ══ TAB: ENGINE ══ -->
+    <div class="tab-panel" id="tab-engine">
+      <div class="group">
+        <label class="lbl">Motion Engine</label>
+        <select id="animStyle">
+          <option value="nova_hybrid">Refined Hybrid</option>
+          <option value="nova_pop">Pop Pulse</option>
+          <option value="ghost_trail">Ghost Ether</option>
+          <option value="glitch_shake">Digital Glitch</option>
+          <option value="typewriter">Classic Typewriter</option>
+          <option value="zoom_burst">Impact Zoom</option>
+          <option value="blur_bloom">Atmospheric Bloom</option>
+          <option value="cosmic_drift">Cosmic Drift</option>
+        </select>
+      </div>
+      <div class="group">
+        <label class="lbl">Visualizer Engine</label>
+        <select id="vizStyle">
+          <option value="nova_core">Nova Core</option>
+          <option value="nova_split">Nova Core — Split Orbit</option>
+          <option value="nova_dashed">Nova Core — Dashed</option>
+          <option value="nova_mirrored">Nova Core — Mirrored</option>
+          <option value="neon_hexagon">Geometric Pulse</option>
+          <option value="fluid_horizon">Fluid Horizon</option>
+          <option value="spectrum_pillars">Spectrum Pillars</option>
+          <option value="starfield_ambient">Starfield Depth</option>
+          <option value="starfield_slow">Cinematic Starfield</option>
+          <option value="nebula_flow">Nebula Flow</option>
+          <option value="beat_reactor">Beat Reactor</option>
+          <option value="heartbeat_pulse">Heartbeat Core</option>
+          <option value="neon_ekg">Neon EKG</option>
+          <option value="vectro_lattice">Vectro Lattice</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div><label class="lbl">Primary</label><input type="color" id="primaryColor" value="#00f2fe"></div>
+        <div><label class="lbl">Secondary</label><input type="color" id="secondaryColor" value="#a855f7"></div>
+      </div>
+
+      <details open>
+        <summary>Dynamics & Tuning</summary>
+        <div class="sec">
+          <div class="row">
+            <div class="slider-group">
+              <div class="slider-label"><span>Radius</span><span class="slider-val" id="v_radius">320</span></div>
+              <input type="range" id="vizRadius" min="50" max="600" value="320" oninput="v_radius.innerText=this.value">
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Bar Width</span><span class="slider-val" id="v_bw">6</span></div>
+              <input type="range" id="vizBarWidth" min="1" max="25" value="6" oninput="v_bw.innerText=this.value">
+            </div>
+          </div>
+          <div class="row">
+            <div class="slider-group">
+              <div class="slider-label"><span>Sensitivity</span><span class="slider-val" id="v_sens">1.0</span></div>
+              <input type="range" id="audioSens" min="0.1" max="3.0" step="0.1" value="1.0" oninput="v_sens.innerText=parseFloat(this.value).toFixed(1)">
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Motion</span><span class="slider-val" id="v_mot">1.0</span></div>
+              <input type="range" id="motionIntensity" min="0" max="3.0" step="0.1" value="1.0" oninput="v_mot.innerText=parseFloat(this.value).toFixed(1)">
+            </div>
+          </div>
+          <div class="row">
+            <div class="slider-group">
+              <div class="slider-label"><span>Flow Speed</span><span class="slider-val" id="v_spd">1.0</span></div>
+              <input type="range" id="bgSpeed" min="0.1" max="4.0" step="0.1" value="1.0" oninput="v_spd.innerText=parseFloat(this.value).toFixed(1)">
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Elasticity</span><span class="slider-val" id="v_el">0.12</span></div>
+              <input type="range" id="elasticity" min="0.01" max="0.4" step="0.01" value="0.12" oninput="v_el.innerText=parseFloat(this.value).toFixed(2)">
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ══ TAB: FORGE ══ -->
+    <div class="tab-panel" id="tab-forge">
+      <div class="group">
+        <label class="lbl">AI Style Concept</label>
+        <input type="text" id="aiPrompt" placeholder="e.g. 'Cyberpunk glitch rain', 'Ocean pulse'...">
+        <div class="row" style="margin-top:1.5rem">
+          <button class="btn" style="background:linear-gradient(135deg, #a855f7, #ec4899);font-size:.8rem;padding:1rem" onclick="forgeAIAnimation()">🚀 Forge Engine</button>
+          <button class="btn" style="background:linear-gradient(135deg, #00f2fe, #4facfe);font-size:.8rem;padding:1rem;color:#000" onclick="forgeAIVisualizer()">🎨 Forge Viz</button>
+        </div>
+        <p style="font-size:.65rem;color:var(--text-dim);font-style:italic;margin-top:1.2rem;line-height:1.6">Describe a mood or style, and the Nova AI Forge will procedurally generate a custom renderer for your project.</p>
+      </div>
+
+      <details open style="margin-top:2rem">
+        <summary>Post-Processing</summary>
+        <div class="sec">
+          <div class="row">
+            <div class="slider-group">
+              <div class="slider-label"><span>Glow Intensity</span><span class="slider-val" id="v_glow">50</span></div>
+              <input type="range" id="glowAmount" min="0" max="200" value="50" oninput="v_glow.innerText=this.value">
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Blur Level</span><span class="slider-val" id="v_blur">0</span></div>
+              <input type="range" id="bgBlur" min="0" max="100" value="0" oninput="v_blur.innerText=this.value">
+            </div>
+          </div>
+          <div class="row">
+            <div class="slider-group">
+              <div class="slider-label"><span>Vignette</span><span class="slider-val" id="v_vig">0.5</span></div>
+              <input type="range" id="vignette" min="0" max="1" step="0.05" value="0.5" oninput="v_vig.innerText=parseFloat(this.value).toFixed(2)">
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Film Grain</span><span class="slider-val" id="v_grain">0.05</span></div>
+              <input type="range" id="grain" min="0" max="0.3" step="0.01" value="0.05" oninput="v_grain.innerText=parseFloat(this.value).toFixed(2)">
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <div class="sidebar-footer">
+    <div class="row">
+      <button class="btn btn-play" id="playBtn" disabled><span>▶</span> PREVIEW STUDIO</button>
+      <button class="btn btn-record" id="recordBtn" disabled><span>⏺</span> EXPORT MASTER</button>
+    </div>
+    <button class="btn btn-ghost" onclick="resetStudio()">↺ Reset Session</button>
+    <a class="download-btn" id="downloadBtn" download="nova-ultimate-export.webm">⬇ Download Master File</a>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-text" id="statusText">Ultimate Engine Ready — Load track to begin</span>
+  </div>
+</aside>
+
+<main class="viewport">
+  <canvas id="visualizer"></canvas>
+  <div class="ai-thinking" id="aiThinking">AI FORGING ENGINE...</div>
+</main>
+
+<script>
+const canvas = document.getElementById('visualizer');
+const ctx = canvas.getContext('2d', { alpha: false });
+const audio = new Audio();
+canvas.width = 1920; canvas.height = 1080;
+
+// State
+let audioCtx, analyser, source, destination, dataArray;
+let isPlaying = false, isRecording = false;
+let globalTime = 0;
+let mediaRecorder = null, recordedChunks = [];
+let energy = { bass:0, mid:0, treble:0 };
+let lyricsData = { isSynced:false, lines:[] };
+let activeIdx = -1, bounce = 1, fade = 0;
+let prevText = '', tickerX = 1920;
+let isSyncing = false, syncIdx = 0, rawLines = [];
+
+// Visual Params
+let textAlign = 'center';
+let textShadow = 'none';
+let bgStyle = 'none';
+let textCase = 'as';
+
+function g(id){ return document.getElementById(id) }
+function gv(id){ return parseFloat(g(id).value) }
+function gb(id){ return g(id).checked }
+
+// STATUS
+function setStatus(msg, type='idle'){
+  g('statusText').innerText = msg;
+  g('statusDot').className = 'status-dot'+(type==='active'?' active':type==='recording'?' recording':'');
+}
+
+// FORMATS
+function fmtTime(s){ s=Math.max(0,s||0); return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0') }
+function fmtLRC(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+(s%60).toFixed(2).padStart(5,'0') }
+
+// TABS
+function switchTab(name){
+  document.querySelectorAll('.ltab').forEach(t=>t.classList.toggle('on', t.id==='tab-btn-'+name));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('on', p.id==='tab-'+name));
+  if(name==='content') buildLineEditor();
+}
+
+// ALIGN & STYLE
+function setAlign(a){
+  textAlign = a;
+  ['left','center','right'].forEach(x=>g('align-'+x).classList.toggle('on', x===a));
+}
+function setBgStyle(el, val){
+  document.querySelectorAll('.bgs').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on'); bgStyle = val;
+  g('bgColorRow').style.display = val==='none'?'none':'grid';
+}
+
+// AUDIO
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  analyser = audioCtx.createAnalyser(); analyser.fftSize = 512;
+  dataArray = new Uint8Array(analyser.frequencyBinCount);
+  source = audioCtx.createMediaElementSource(audio);
+  destination = audioCtx.createMediaStreamDestination();
+  source.connect(analyser); analyser.connect(audioCtx.destination); analyser.connect(destination);
+}
+
+g('audioFile').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  audio.src = URL.createObjectURL(file);
+  g('playBtn').disabled = false; g('recordBtn').disabled = false;
+  g('playBtn').classList.add('ready');
+  g('progressSection').style.display = 'block';
+  audio.onloadedmetadata = ()=>{ g('timeDur').innerText = fmtTime(audio.duration) };
+  setStatus('Track loaded: '+file.name);
+});
+
+// PLAY BUTTON
+g('playBtn').addEventListener('click',()=>{
+  initAudio(); if(audioCtx.state==='suspended') audioCtx.resume();
+  if(isPlaying){ 
+    audio.pause(); isPlaying=false; 
+    g('playBtn').innerHTML='<span>▶</span> PREVIEW STUDIO'; 
+    g('playBtn').style.filter='none'; g('playBtn').classList.add('ready');
+    setStatus('Paused');
+  } else { 
+    parseLyrics();
+    if(!lyricsData.isSynced && lyricsData.lines.length > 0 && audio.duration) autoSyncLyrics();
+    audio.play(); isPlaying=true; 
+    g('playBtn').innerHTML='<span>⏸</span> PAUSE SESSION'; 
+    g('playBtn').style.filter='hue-rotate(45deg)'; g('playBtn').classList.remove('ready');
+    setStatus('Playing Session','active');
+  }
+});
+
+// EXPORT
+g('recordBtn').addEventListener('click',()=>{
+  if(isRecording){ if(mediaRecorder) mediaRecorder.stop(); return }
+  initAudio(); parseLyrics(); audio.currentTime=0; isPlaying=true; audio.play();
+  const vs = canvas.captureStream(60);
+  const combined = new MediaStream([...vs.getVideoTracks(),...destination.stream.getAudioTracks()]);
+  mediaRecorder = new MediaRecorder(combined,{mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:15000000});
+  recordedChunks = [];
+  mediaRecorder.ondataavailable = e => { if(e.data.size>0) recordedChunks.push(e.data) };
+  mediaRecorder.onstop = ()=>{
+    g('downloadBtn').href = URL.createObjectURL(new Blob(recordedChunks,{type:'video/webm'}));
+    g('downloadBtn').style.display='block'; isRecording=false; g('recordBtn').innerText='⏺ EXPORT MASTER'; setStatus('Export ready');
+  };
+  mediaRecorder.start(); isRecording=true; g('recordBtn').innerText='⏹ STOP EXPORT'; setStatus('Recording...','recording');
+});
+
+// LYRICS LOGIC
+function parseLyrics(){
+  const raw = g('lyricsInput').value.split('\n').filter(l=>l.trim());
+  const re = /\[(\d{2}):(\d{2}(?:\.\d+)?)\](.*)/;
+  let hasLRC=false; const parsed=[];
+  for(const line of raw){
+    const m=line.match(re);
+    if(m){ hasLRC=true; parsed.push({time:parseInt(m[1])*60+parseFloat(m[2]),text:m[3].trim()}) }
+  }
+  lyricsData = hasLRC?{isSynced:true,lines:parsed}:{isSynced:false,lines:raw.map(l=>l.trim())};
+}
+
+window.autoSyncLyrics = function(){
+  if(!audio.duration) return setStatus('Need audio duration');
+  parseLyrics(); const lines = lyricsData.isSynced?lyricsData.lines.map(l=>l.text):lyricsData.lines;
+  if(!lines.length) return;
+  const interval = audio.duration / (lines.length + 1);
+  const synced = lines.map((txt,i)=>`[${fmtLRC((i+0.5)*interval)}] ${txt}`);
+  g('lyricsInput').value = synced.join('\n'); parseLyrics(); buildLineEditor(); setStatus('Auto-Sync Complete');
+};
+
+window.autoAdjustLyrics = function(){
+  const lines = g('lyricsInput').value.split('\n').map(l=>{
+    let t=l.trim(); const m=t.match(/^(\[\d{2}:\d{2}\.\d{2,3}\])(.*)/);
+    let ts=m?m[1]:'',txt=m?m[2].trim():t;
+    if(txt.length) txt=txt.charAt(0).toUpperCase()+txt.slice(1);
+    return ts+(ts?' ':'')+txt;
+  }).filter(l=>l.length>0);
+  g('lyricsInput').value=lines.join('\n'); parseLyrics(); setStatus('Formatted');
+};
+
+window.nudgeLyrics = function(off){
+  const lines = g('lyricsInput').value.split('\n').map(l=>{
+    const m=l.match(/^\[(\d{2}):(\d{2}\.\d{2,3})\](.*)/); if(!m) return l;
+    let t=Math.max(0, parseInt(m[1])*60+parseFloat(m[2])+off);
+    return `[${fmtLRC(t)}]${m[3]}`;
+  });
+  g('lyricsInput').value=lines.join('\n'); parseLyrics(); setStatus('Nudged '+off+'s');
+};
+
+window.clearTimestamps = function(){
+  g('lyricsInput').value = g('lyricsInput').value.replace(/\[\d{2}:\d{2}\.\d{2,3}\]/g,'').trim();
+  parseLyrics(); setStatus('Timestamps cleared');
+};
+
+window.exportLRC = function(){
+  parseLyrics(); if(!lyricsData.isSynced) return setStatus('Sync lyrics first');
+  const blob = new Blob([g('lyricsInput').value], {type:'text/plain'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='lyrics.lrc'; a.click();
+};
+
+// LIVE SYNC
+g('syncBtn').addEventListener('click',()=>{
+  if(!audio.src) return;
+  if(isSyncing){
+    isSyncing=false; g('syncBtn').classList.remove('active'); audio.pause(); isPlaying=false;
+    g('lyricsInput').value = lyricsData.lines.map(l=>`[${fmtLRC(l.time)}] ${l.text}`).join('\n');
+    buildLineEditor(); setStatus('Live Sync Saved'); return;
+  }
+  rawLines = g('lyricsInput').value.split('\n').filter(l=>l.trim()).map(l=>l.replace(/\[\d{2}:\d{2}\.\d{2,3}\]/g,'').trim());
+  isSyncing=true; syncIdx=0; lyricsData={isSynced:true,lines:[]};
+  g('syncBtn').classList.add('active'); initAudio(); audio.currentTime=0; audio.play(); isPlaying=true;
+  setStatus('SYNCING: Press Space for each line...','active');
+});
+
+window.addEventListener('keydown',e=>{
+  if(isSyncing && e.code==='Space'){
+    e.preventDefault();
+    if(syncIdx < rawLines.length){
+      lyricsData.lines.push({time:audio.currentTime, text:rawLines[syncIdx]}); syncIdx++;
+      setStatus(`Stamped ${syncIdx}/${rawLines.length}: ${rawLines[syncIdx-1]}`, 'active');
+    } else g('syncBtn').click();
+  }
+});
+
+// EDITOR
+function buildLineEditor(){
+  const el=g('lineEditor'); el.innerHTML='';
+  const lines = lyricsData.isSynced ? lyricsData.lines : lyricsData.lines.map(t=>({time:null,text:t}));
+  lines.forEach((l,i)=>{
+    const row=document.createElement('div'); row.className='line-row';
+    const ts=document.createElement('input'); ts.className='line-ts'; ts.value=l.time!==null?fmtLRC(l.time):'--:--';
+    const txt=document.createElement('input'); txt.className='line-txt'; txt.value=l.text;
+    const del=document.createElement('button'); del.className='line-del'; del.innerText='✕';
+    del.onclick=()=>{ lines.splice(i,1); lyricsData.lines=lines; buildLineEditor() };
+    row.append(ts,txt,del); el.append(row);
+  });
+}
+
+// RENDERERS
+const visualizers = {
+  nova_core:(ctx,e,p,s,w,h,cx,cy,m)=>{
+    const r=gv('vizRadius'),bw=gv('vizBarWidth'),bc=120,R=(r+e.bass*70)*(0.5+m*0.5);
+    ctx.beginPath(); ctx.arc(0,0,R,0,Math.PI*2); ctx.strokeStyle=p; ctx.lineWidth=bw; ctx.stroke();
+    for(let i=0;i<bc;i++){
+      const a=(i/bc)*Math.PI*2, v=dataArray?dataArray[i%dataArray.length]:0, bh=(v/255)*280*m;
+      ctx.save(); ctx.rotate(a);
+      const g2=ctx.createLinearGradient(0,R,0,R+bh); g2.addColorStop(0,p); g2.addColorStop(1,s);
+      ctx.fillStyle=g2; ctx.fillRect(-bw/2,R,bw,bh); ctx.fillStyle='#fff'; ctx.fillRect(-bw/2,R+bh,bw,3);
+      ctx.restore();
+    }
+  },
+  nova_split:(ctx,e,p,s,w,h,cx,cy,m)=>{
+    const r=gv('vizRadius'),bw=gv('vizBarWidth'),bc=120,R=(r+e.bass*50)*m;
+    for(let i=0;i<bc;i++){
+      const a=(i/bc)*Math.PI*2, v=dataArray?dataArray[i%dataArray.length]:0, bh=(v/255)*200*m;
+      ctx.save(); ctx.rotate(a+globalTime*0.2); ctx.fillStyle=i%2===0?p:s;
+      ctx.fillRect(-bw/2,R+(i%2===0?0:50),bw,bh); ctx.restore();
+    }
+  },
+  fluid_horizon:(ctx,e,p,s,w,h,cx,cy,m)=>{
+    const bc=60; ctx.translate(-cx,cy*0.4); ctx.beginPath(); ctx.moveTo(0,0);
+    for(let i=0;i<=bc;i++){
+      const v=dataArray?dataArray[i]:0, y=Math.sin(i*0.15+globalTime*4)*50+(v/255)*-450*m;
+      ctx.lineTo(i*(w/bc),y);
+    }
+    ctx.lineTo(w,500); ctx.lineTo(0,500); ctx.closePath();
+    const g2=ctx.createLinearGradient(0,-450,0,500); g2.addColorStop(0,p); g2.addColorStop(1,'transparent');
+    ctx.fillStyle=g2; ctx.fill();
+  },
+  beat_reactor:(ctx,e,p,s,w,h,cx,cy,m,sp)=>{
+    const r=gv('vizRadius'); if(e.bass>0.85 && Math.random()>0.5) shockwaves.push({r:100,a:1,w:2+e.bass*10});
+    shockwaves=shockwaves.filter(sh=>sh.a>0);
+    shockwaves.forEach(sh=>{ sh.r+=20*sp; sh.a-=0.02*sp; ctx.beginPath(); ctx.arc(0,0,sh.r,0,Math.PI*2); ctx.strokeStyle=p; ctx.lineWidth=sh.w; ctx.globalAlpha=sh.a; ctx.stroke() });
+    ctx.globalAlpha=1; const R=(r*0.7+e.bass*150)*m;
+    const g2=ctx.createRadialGradient(0,0,0,0,0,R); g2.addColorStop(0,'#fff'); g2.addColorStop(0.2,p); g2.addColorStop(1,'transparent');
+    ctx.fillStyle=g2; ctx.beginPath(); ctx.arc(0,0,R,0,Math.PI*2); ctx.fill();
+    for(let i=0;i<8;i++){ const a=globalTime*2+(i*Math.PI/4); ctx.strokeStyle=s; ctx.lineWidth=4*e.bass; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*(R+50)*(1+e.bass),Math.sin(a)*(R+50)*(1+e.bass)); ctx.stroke() }
+  },
+  vectro_lattice:(ctx,e,p,s,w,h,cx,cy,m,sp)=>{
+    ctx.save(); ctx.translate(-cx,-cy); ctx.strokeStyle=p; ctx.lineWidth=1;
+    nodes.forEach((n,i)=>{
+      n.x+=n.vx*sp*(1+e.bass); n.y+=n.vy*sp*(1+e.bass);
+      if(n.x<0||n.x>w)n.vx*=-1; if(n.y<0||n.y>h)n.vy*=-1;
+      nodes.forEach((n2,j)=>{
+        if(i===j)return; const d=Math.hypot(n.x-n2.x,n.y-n2.y);
+        if(d<300){ ctx.globalAlpha=(1-d/300)*0.5*(0.2+e.bass); ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(n2.x,n2.y); ctx.stroke() }
+      });
+      ctx.globalAlpha=0.8; ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(n.x,n.y,2+e.bass*4,0,Math.PI*2); ctx.fill();
+    });
+    ctx.restore();
+  }
+};
+
+const animations = {
+  nova_hybrid:(ctx,txt,f,b,e,p,s)=>{
+    const m=gv('motionIntensity'),sp=gv('bgSpeed'),sk=gv('textStroke');
+    ctx.scale(b*(1+e.bass*0.15*m),b*(1+e.bass*0.15*m));
+    const off=e.bass*25*m;
+    for(let i=1;i<4;i++){ ctx.globalAlpha=(0.2*f)/i; ctx.fillText(txt,Math.sin(globalTime*5*sp)*i*8*m,i*12*Math.cos(globalTime*3*sp)) }
+    ctx.globalAlpha=0.4*f; ctx.fillStyle='#f00'; ctx.fillText(txt,Math.random()*off,Math.random()*off);
+    ctx.fillStyle='#0ff'; ctx.fillText(txt,-Math.random()*off,-Math.random()*off);
+    const grad=ctx.createLinearGradient(-300,0,300,0); grad.addColorStop(0,p); grad.addColorStop(1,s);
+    ctx.globalAlpha=f; ctx.fillStyle=grad; if(sk>0){ ctx.strokeStyle=g('strokeColor').value; ctx.lineWidth=sk; ctx.strokeText(txt,0,0) }
+    ctx.fillText(txt,0,0);
+  },
+  nova_pop:(ctx,txt,f,b,e,p)=>{
+    const m=gv('motionIntensity'); ctx.scale(b*(1+e.bass*0.12*m),b*(1+e.bass*0.12*m));
+    ctx.globalAlpha=f; ctx.fillStyle=g('textColor').value; ctx.fillText(txt,0,0);
+  },
+  cosmic_drift:(ctx,txt,f,b,e,p,s)=>{
+    const m=gv('motionIntensity'); ctx.scale(0.8+e.bass*0.3*m,0.8+e.bass*0.3*m);
+    ctx.globalAlpha=f; ctx.fillStyle='#fff'; ctx.fillText(txt,0,0);
+    for(let i=0;i<10;i++){ const x=(Math.random()-0.5)*1000*(1-f)*m, y=(Math.random()-0.5)*200*m; ctx.globalAlpha=(1-f)*0.5; ctx.fillRect(x,y,40*m,2) }
+  }
+};
+
+// DATA
+const blobs = Array.from({length:8},()=>({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.001,vy:(Math.random()-.5)*.001,size:200+Math.random()*300}));
+const stars = Array.from({length:400},()=>({x:Math.random()*1920,y:Math.random()*1080,z:Math.random()*1920,color:Math.random()>.8?'#00f2fe':'#ffffff'}));
+const nodes = Array.from({length:40},()=>({x:Math.random()*1920,y:Math.random()*1080,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2}));
+let shockwaves = [];
+
+// DRAW
+function draw(){
+  requestAnimationFrame(draw);
+  const w=canvas.width, h=canvas.height, cx=w/2, cy=h/2;
+  const sp=gv('bgSpeed'), m=gv('motionIntensity'), p=g('primaryColor').value, s=g('secondaryColor').value;
+  globalTime += 0.016*sp;
+
+  if(analyser && isPlaying){
+    analyser.getByteFrequencyData(dataArray);
+    let b=0, m_e=0; for(let i=0;i<10;i++) b+=dataArray[i]; for(let i=20;i<60;i++) m_e+=dataArray[i];
+    energy.bass=(b/10/255)*gv('audioSens'); energy.mid=(m_e/40/255)*gv('audioSens');
+  } else { energy.bass=0; energy.mid=0; }
+
+  ctx.fillStyle='#010103'; ctx.fillRect(0,0,w,h);
+  if(gv('bgBlur')>0) ctx.filter=`blur(${gv('bgBlur')}px)`;
+  blobs.forEach((bl,i)=>{
+    bl.x+=bl.vx*(1+energy.bass*2.5)*sp; bl.y+=bl.vy*(1+energy.bass*2.5)*sp;
+    if(bl.x<0||bl.x>1) bl.vx*=-1; if(bl.y<0||bl.y>1) bl.vy*=-1;
+    const g2=ctx.createRadialGradient(bl.x*w,bl.y*h,0,bl.x*w,bl.y*h,bl.size*(1+energy.bass));
+    g2.addColorStop(0,(i%2===0?p:s)+'18'); g2.addColorStop(1,'transparent');
+    ctx.fillStyle=g2; ctx.globalCompositeOperation='screen'; ctx.fillRect(0,0,w,h);
+  });
+  ctx.globalCompositeOperation='source-over'; ctx.filter='none';
+
+  ctx.save(); ctx.translate(cx,cy);
+  const vStyle=g('vizStyle').value; if(visualizers[vStyle]) visualizers[vStyle](ctx,energy,p,s,w,h,cx,cy,m,sp);
+  ctx.restore();
+
+  let idx=-1;
+  if(lyricsData.isSynced){ for(let i=lyricsData.lines.length-1;i>=0;i--){ if(audio.currentTime>=lyricsData.lines[i].time){ idx=i; break } } }
+  if(idx!==-1 && idx!==activeIdx){ activeIdx=idx; bounce=1+0.4*m; fade=0 }
+  bounce+=(1-bounce)*gv('elasticity'); fade=Math.min(1,fade+0.08);
+
+  if(idx!==-1){
+    const txt = lyricsData.isSynced?lyricsData.lines[idx].text:lyricsData.lines[idx];
+    const nxt = (idx+1 < lyricsData.lines.length)?(lyricsData.isSynced?lyricsData.lines[idx+1].text:lyricsData.lines[idx+1]):'';
+    const anim=g('animStyle').value;
+    ctx.save(); ctx.translate(cx,cy+gv('textYPos'));
+    ctx.font=`${g('fontWeight').value} ${gv('fontSize')}px ${g('fontFamily').value}`;
+    ctx.textAlign=textAlign; ctx.textBaseline='middle'; ctx.letterSpacing=`${gv('letterSpacing')}px`;
+    ctx.save(); if(animations[anim]) animations[anim](ctx,txt,fade,bounce,energy,p,s); ctx.restore();
+    if(nxt){
+      ctx.save(); ctx.translate(0, gv('fontSize')+50); ctx.globalAlpha=0.25*fade;
+      ctx.font=`300 ${gv('fontSize')*0.6}px ${g('fontFamily').value}`; ctx.fillText(nxt,0,0); ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  // Vignette & Grain
+  const vig=gv('vignette'), gr=gv('grain');
+  if(vig>0){ const vg=ctx.createRadialGradient(cx,cy,w*.2,cx,cy,w*.8); vg.addColorStop(0,'transparent'); vg.addColorStop(1,`rgba(0,0,0,${vig})`); ctx.fillStyle=vg; ctx.fillRect(0,0,w,h) }
+  if(gr>0){ ctx.globalAlpha=gr; for(let i=0;i<30;i++){ ctx.fillStyle=Math.random()>.5?'#fff':'#000'; ctx.fillRect(Math.random()*w,Math.random()*h,2,2) } ctx.globalAlpha=1 }
+
+  if(audio.duration) g('progressFill').style.width=(audio.currentTime/audio.duration*100)+'%';
+}
+
+function resetStudio(){
+  if(confirm('Reset all?')){ location.reload() }
+}
+
+draw();
+</script>
+</body>
+</html>

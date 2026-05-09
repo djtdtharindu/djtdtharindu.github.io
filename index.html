@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tharindu Dilshan | Portfolio</title>
+    <meta name="description" content="Portfolio of Tharindu Dilshan, Full Stack Developer and QA Engineer.">
+    <meta name="keywords" content="Tharindu Dilshan, Portfolio, Full Stack Developer, QA Engineer, Java, Python, SQL, C, C++, JavaScript">
+    <meta name="author" content="Tharindu Dilshan">
+    <meta property="og:title" content="Tharindu Dilshan | Portfolio">
+    <meta property="og:description" content="Portfolio of Tharindu Dilshan, Full Stack Developer and QA Engineer.">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#050505">
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="bg-animated">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Navigation (shell — filled by JS) -->
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <div class="logo" id="nav-logo"></div>
+            <ul class="nav-links" id="nav-links"></ul>
+            <div class="mobile-menu-btn" id="mobile-menu-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section (shell) -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <p class="greeting">Hello, I'm</p>
+                <h1 class="glitch-text" id="hero-name"></h1>
+                <h2 class="role-text">
+                    <span class="typing-container">
+                        <span id="typewriter"></span><span class="cursor">|</span>
+                    </span>
+                </h2>
+                <p class="hero-desc" id="hero-tagline"></p>
+                <div class="hero-cta" id="hero-cta"></div>
+            </div>
+        </section>
+
+        <!-- About & Skills Section (shell) -->
+        <section id="about" class="about-section fade-in">
+            <div class="section-header">
+                <h2>About <span class="accent">Me</span></h2>
+                <div class="line"></div>
+            </div>
+            <div class="about-grid">
+                <div class="glass-card education-card" id="education-list"></div>
+                <div class="skills-container" id="skills-container"></div>
+            </div>
+        </section>
+
+        <!-- Experience Section (shell) -->
+        <section id="experience" class="experience-section fade-in">
+            <div class="section-header">
+                <h2>My <span class="accent">Experience</span></h2>
+                <div class="line"></div>
+            </div>
+            <div class="timeline" id="timeline"></div>
+        </section>
+
+        <!-- Projects Section (shell) -->
+        <section id="projects" class="projects-section fade-in">
+            <div class="section-header">
+                <h2>Featured <span class="accent">Projects</span></h2>
+                <div class="line"></div>
+            </div>
+            <div class="project-filters" id="project-filters"></div>
+            <div class="projects-grid" id="projects-grid"></div>
+        </section>
+
+        <!-- Extracurriculars Section (shell) -->
+        <section id="activities" class="activities-section fade-in">
+            <div class="section-header">
+                <h2>Extra<span class="accent">curriculars</span></h2>
+                <div class="line"></div>
+            </div>
+            <div class="activities-grid" id="activities-grid"></div>
+        </section>
+
+        <!-- Contact Section (shell) -->
+        <section id="contact" class="contact-section fade-in">
+            <div class="glass-card contact-card">
+                <div class="contact-info">
+                    <h2>Let's <span class="accent">Connect</span></h2>
+                    <p>Open for full-time opportunities or freelance projects.</p>
+                    <div class="contact-links" id="contact-links"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p id="footer-text"></p>
+    </footer>
+
+    <!-- Terminal / Browser Demo Modal -->
+    <div id="demo-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="demo-modal-title">
+        <div class="terminal-container glass-card">
+            <div class="terminal-header">
+                <div class="dots">
+                    <span class="dot red" id="modal-close-dot" role="button" title="Close" tabindex="0"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="terminal-title" id="demo-modal-title">Project Demo</div>
+                <button class="close-btn" id="modal-close-btn" aria-label="Close demo">&times;</button>
+            </div>
+            <div class="terminal-body" id="terminal-body"></div>
+        </div>
+    </div>
+
+    <!-- Data config (edit this file to update portfolio) -->
+    <script src="data.js"></script>
+    <!-- Rendering engine -->
+    <script src="script.js"></script>
+</body>
+</html>

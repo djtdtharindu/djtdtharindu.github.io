@@ -1,0 +1,15 @@
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Compiled Java/C (source files are fine, binaries are not)
+*.class
+*.o
+*.exe
+*.out

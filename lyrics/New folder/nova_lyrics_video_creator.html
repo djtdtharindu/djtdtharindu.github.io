@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Studio - Refined Master Edition</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;700;900&family=Roboto:wght@300;400;700;900&family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #050508;
+            --panel-bg: rgba(10, 10, 15, 0.98);
+            --accent: #00f2fe;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body { 
+            margin: 0; padding: 0; 
+            background: var(--bg-dark); color: #fff; 
+            font-family: 'Outfit', sans-serif; 
+            display: flex; height: 100vh; overflow: hidden; 
+        }
+        
+        * { box-sizing: border-box; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .sidebar {
+            width: 440px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(50px);
+            border-right: 1px solid var(--border);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 100;
+            box-shadow: 20px 0 80px rgba(0,0,0,0.9);
+            overflow-y: auto;
+        }
+
+        header h1 { 
+            font-size: 2.4rem; margin: 0; font-weight: 800;
+            background: linear-gradient(135deg, #00f2fe 0%, #a855f7 100%); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            letter-spacing: -1.5px;
+        }
+        .subtitle { color: #555; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+
+        .group { display: flex; flex-direction: column; gap: 0.8rem; }
+        label { font-size: 0.7rem; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.15rem; }
+
+        input[type="file"], textarea, select {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 1rem;
+            border-radius: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+        }
+        
+        textarea { height: 180px; resize: none; line-height: 1.6; }
+        textarea:focus { border-color: var(--accent); background: rgba(0,0,0,0.7); }
+
+        .tool-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-tool {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            color: #ccc; padding: 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-tool:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        .btn {
+            padding: 1.2rem; border-radius: 15px; font-weight: 800; font-size: 1rem; cursor: pointer;
+            border: none; color: white; transition: all 0.4s; display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-sync { background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: #888; }
+        .btn-sync.active { background: #f43f5e; border-color: #f43f5e; color: #fff; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
+
+        .btn-play { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); color: #000; box-shadow: 0 10px 25px rgba(0,242,254,0.15); transition: 0.4s; }
+        .btn-play.ready { animation: playPulse 2s infinite; }
+        @keyframes playPulse { 0% { box-shadow: 0 0 0 0 rgba(0,242,254,0.4); } 70% { box-shadow: 0 0 0 15px rgba(0,242,254,0); } 100% { box-shadow: 0 0 0 0 rgba(0,242,254,0); } }
+        .btn-record { background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%); box-shadow: 0 10px 25px rgba(244,63,94,0.15); }
+        .btn:disabled { opacity: 0.2; cursor: not-allowed; }
+            z-index: 100;
+            box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+        }
+        
+        header { padding: 2.5rem 1.5rem; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+        h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.05rem; background: linear-gradient(to right, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { font-size: 0.65rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.3rem; margin-top: 4px; font-weight: 700; opacity: 0.8; }
+
+        details {
+            border-bottom: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        details[open] { background: rgba(255, 255, 255, 0.02); }
+        
+        summary {
+            padding: 1.4rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            outline: none;
+            transition: color 0.3s;
+        }
+        summary:hover { color: #fff; }
+        summary::after { 
+            content: '+'; 
+            font-size: 1.2rem; 
+            transition: transform 0.4s;
+            color: var(--accent);
+            font-weight: 300;
+        }
+        details[open] summary::after { content: '−'; transform: rotate(180deg); }
+        details[open] summary { color: var(--accent); }
+
+        .details-content { 
+            padding: 0 1.5rem 1.5rem 1.5rem; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.4rem; 
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-msg { font-size: 0.75rem; color: #444; text-align: center; margin-top: 10px; font-weight: 600; }
+
+        .viewport { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        canvas { width: 100%; height: 100%; object-fit: contain; }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <header>
+            <h1>Nova Refined</h1>
+            <p class="subtitle">Motion Art Studio</p>
+        </header>
+        
+        <details open>
+            <summary>Track & Content</summary>
+            <div class="details-content">
+                <div class="group">
+                    <label>Master Track</label>
+                    <input type="file" id="audioFile" accept="audio/*">
+                </div>
+                <div class="group">
+                    <label>Lyric Content</label>
+                    <textarea id="lyricsInput" placeholder="Paste lyrics here..."></textarea>
+                    <div class="tool-row">
+                        <button class="btn-tool" onclick="autoAdjustLyrics()">✨ Format</button>
+                        <button class="btn-tool" onclick="autoSyncLyrics()" title="Distribute lines evenly">⚡ Auto Sync</button>
+                        <button class="btn-tool" onclick="nudgeLyrics(-0.2)">⏪ -0.2s</button>
+                        <button class="btn-tool" onclick="nudgeLyrics(0.2)">⏩ +0.2s</button>
+                        <button class="btn-tool" onclick="clearTimestamps()">🗑️ Clear</button>
+                    </div>
+                    <button class="btn btn-sync" id="syncBtn">Live Sync (Space)</button>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Engines & Style</summary>
+            <div class="details-content">
+                <div class="group">
+                    <label>Animation Style</label>
+                    <select id="animStyle">
+                        <option value="nova_hybrid">Refined Hybrid (Combined)</option>
+                        <option value="nova_pop">Pop Pulse</option>
+                        <option value="ghost_trail">Ghost Ether</option>
+                        <option value="glitch_shake">Digital Glitch</option>
+                        <option value="typewriter">Classic Type</option>
+                        <option value="zoom_burst">Impact Zoom</option>
+                        <option value="blur_bloom">Atmospheric Bloom</option>
+                        <option value="cosmic_drift">Starfield Depth (Anim)</option>
+                    </select>
+                </div>
+                <div class="group">
+                    <label>Visualizer Engine</label>
+                    <select id="vizStyle">
+                        <option value="nova_core">Refined Nova Core</option>
+                        <option value="nova_split">Nova Core (Split Orbit)</option>
+                        <option value="nova_dashed">Nova Core (Dashed)</option>
+                        <option value="nova_mirrored">Nova Core (Mirrored)</option>
+                        <option value="neon_hexagon">Geometric Pulse</option>
+                        <option value="fluid_horizon">Fluid Horizon</option>
+                        <option value="spectrum_pillars">Spectrum Pillars</option>
+                        <option value="starfield_ambient">Starfield Depth (Viz)</option>
+                        <option value="starfield_slow">Cinematic Starfield (Slow)</option>
+                        <option value="nebula_flow">Nebula Flow</option>
+                        <option value="beat_reactor">Beat Reactor (High Impact)</option>
+                        <option value="heartbeat_pulse">Heartbeat Core (Pulse)</option>
+                        <option value="neon_ekg">Neon EKG (Rhythmic)</option>
+                        <option value="vectro_lattice">Vectro Lattice (Geometric)</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="color" id="primaryColor" value="#00f2fe" style="flex:1; height:45px; border-radius:10px;">
+                    <input type="color" id="secondaryColor" value="#a855f7" style="flex:1; height:45px; border-radius:10px;">
+                </div>
+                <div class="group" style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px;">
+                    <label style="font-size:0.6rem; opacity:0.5;">Engine Tuning</label>
+                    <div class="tool-row">
+                        <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+                            <div class="control-label"><span>Radius</span></div>
+                            <input type="range" id="vizRadius" min="50" max="600" value="320">
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+                            <div class="control-label"><span>Bar Width</span></div>
+                            <input type="range" id="vizBarWidth" min="1" max="20" value="6">
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px; margin-top:10px;">
+                        <div class="control-label"><span>Bar Count</span></div>
+                        <input type="range" id="vizBarCount" min="12" max="256" step="12" value="120">
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Typography</summary>
+            <div class="details-content">
+                <select id="fontFamily">
+                    <option value="'Outfit', sans-serif">Outfit</option>
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                </select>
+                <div class="tool-row">
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Size</span><span id="val_fontSize">100</span></div>
+                        <input type="range" id="fontSize" min="40" max="250" value="100" oninput="val_fontSize.innerText=this.value">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <label style="font-size:0.6rem; opacity:0.6;">Weight</label>
+                        <select id="fontWeight" style="padding:0.4rem; font-size:0.8rem;">
+                            <option value="300">Light</option>
+                            <option value="400">Regular</option>
+                            <option value="600">Bold</option>
+                            <option value="800" selected>Black</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="tool-row">
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Spacing</span><span id="val_spacing">0</span></div>
+                        <input type="range" id="letterSpacing" min="-10" max="50" value="0" oninput="val_spacing.innerText=this.value">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Stroke</span><span id="val_stroke">0</span></div>
+                        <input type="range" id="textStroke" min="0" max="20" value="0" oninput="val_stroke.innerText=this.value">
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Motion & Dynamics</summary>
+            <div class="details-content">
+                <div class="tool-row">
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Sensitivity</span></div>
+                        <input type="range" id="audioSens" min="0.1" max="3.0" step="0.1" value="1.0">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Motion Scale</span></div>
+                        <input type="range" id="motionIntensity" min="0" max="3.0" step="0.1" value="1.0">
+                    </div>
+                </div>
+                <div class="tool-row">
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Flow Speed</span></div>
+                        <input type="range" id="bgSpeed" min="0.1" max="4.0" step="0.1" value="1.0">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Elasticity</span></div>
+                        <input type="range" id="elasticity" min="0.01" max="0.3" step="0.01" value="0.12">
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Visual Effects</summary>
+            <div class="details-content">
+                <div class="tool-row">
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Glow</span></div>
+                        <input type="range" id="glowAmount" min="0" max="150" value="50">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Blur</span></div>
+                        <input type="range" id="bgBlur" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="tool-row">
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Vignette</span></div>
+                        <input type="range" id="vignette" min="0" max="1" step="0.1" value="0.5">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div class="control-label"><span>Grain</span></div>
+                        <input type="range" id="grain" min="0" max="0.2" step="0.01" value="0.05">
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Nova AI Forge</summary>
+            <div class="details-content">
+                <div class="group">
+                    <label>Mood / Style Concept</label>
+                    <input type="text" id="aiPrompt" placeholder="e.g. 'Neon Ghost Fire'" style="background:rgba(0,0,0,0.5); border:1px solid var(--border); color:#fff; padding:0.8rem; border-radius:10px; font-family:inherit;">
+                    <div class="tool-row" style="margin-top:10px;">
+                        <button class="btn-tool" style="background:linear-gradient(135deg, #a855f7, #ec4899); color:#fff;" onclick="forgeAIAnimation()">🚀 Forge Animation</button>
+                        <button class="btn-tool" style="background:linear-gradient(135deg, #00f2fe, #4facfe); color:#000;" onclick="forgeAIVisualizer()">🎨 Forge Visualizer</button>
+                    </div>
+                </div>
+                <p style="font-size:0.6rem; color:#555; font-style:italic;">Describes a style and the AI Agent will procedurally generate a new unique engine for you.</p>
+            </div>
+        </details>
+
+        <div class="group" style="padding: 1.2rem;">
+            <button class="btn btn-play" id="playBtn" disabled>▶ Preview Studio</button>
+            <button class="btn btn-record" id="recordBtn" disabled>⏺ Export Master</button>
+            <button class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); font-size: 0.8rem; margin-top: 10px;" onclick="resetStudio()">🔄 Reset Studio</button>
+            <a class="btn" id="downloadBtn" style="display: none; background: #10b981; margin-top:10px;">⬇ Download File</a>
+        </div>
+        
+        <div class="status-msg" id="statusText">System Ready.</div>
+    </aside>
+
+    <main class="viewport">
+        <canvas id="visualizer"></canvas>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('visualizer');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        const audio = new Audio();
+        const statusText = document.getElementById('statusText');
+        const playBtn = document.getElementById('playBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let audioCtx, analyser, source, destination, dataArray;
+        let isPlaying = false, isRecording = false, globalTime = 0;
+        let lyricsData = { isSynced: false, lines: [] };
+        let activeIdx = -1, bounce = 1, fade = 0;
+
+        canvas.width = 1920; canvas.height = 1080;
+        let energy = { bass: 0, mid: 0, treble: 0 };
+
+        const blobs = Array.from({length: 8}, () => ({
+            x: Math.random(), y: Math.random(),
+            vx: (Math.random() - 0.5) * 0.001, vy: (Math.random() - 0.5) * 0.001,
+            size: 200 + Math.random() * 300
+        }));
+
+        const stars = Array.from({length: 400}, () => ({
+            x: Math.random() * 1920, y: Math.random() * 1080,
+            z: Math.random() * 1920,
+            color: Math.random() > 0.8 ? '#00f2fe' : '#ffffff'
+        }));
+
+        const nebula = Array.from({length: 5}, () => ({
+            x: Math.random() * 1920, y: Math.random() * 1080,
+            r: 400 + Math.random() * 400,
+            phase: Math.random() * Math.PI * 2
+        }));
+
+        let beatHistory = [];
+        let shockwaves = [];
+        const nodes = Array.from({length: 40}, () => ({
+            x: Math.random() * 1920, y: Math.random() * 1080,
+            vx: (Math.random()-0.5) * 2, vy: (Math.random()-0.5) * 2
+        }));
+
+        document.getElementById('audioFile').addEventListener('change', e => {
+            if(e.target.files[0]) {
+                audio.src = URL.createObjectURL(e.target.files[0]);
+                playBtn.disabled = false;
+                recordBtn.disabled = false;
+                playBtn.classList.add('ready');
+                statusText.innerText = "Track loaded: " + e.target.files[0].name;
+            }
+        });
+
+        function initAudio() {
+            if(audioCtx) return;
+            audioCtx = new AudioContext();
+            analyser = audioCtx.createAnalyser(); analyser.fftSize = 512;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            source = audioCtx.createMediaElementSource(audio);
+            destination = audioCtx.createMediaStreamDestination();
+            source.connect(analyser); analyser.connect(audioCtx.destination); analyser.connect(destination);
+        }
+
+        // --- AUTO-ADJUST LYRICS ---
+        window.autoAdjustLyrics = function() {
+            const input = document.getElementById('lyricsInput');
+            const lines = input.value.split('\n');
+            const lrcRegex = /^(\[\d{2}:\d{2}\.\d{2,3}\])(.*)/;
+            
+            const adjusted = lines.map(line => {
+                let text = line.trim();
+                let timestamp = "";
+                
+                const match = text.match(lrcRegex);
+                if (match) {
+                    timestamp = match[1];
+                    text = match[2].trim();
+                }
+                
+                // Capitalize first letter
+                if (text.length > 0) {
+                    text = text.charAt(0).toUpperCase() + text.slice(1);
+                }
+                
+                return timestamp + (timestamp ? " " : "") + text;
+            }).filter(l => l.length > 0);
+            
+            input.value = adjusted.join('\n');
+            parseLyrics();
+            statusText.innerText = "Lyrics auto-formatted.";
+        };
+
+        window.nudgeLyrics = function(offset) {
+            const input = document.getElementById('lyricsInput');
+            const lines = input.value.split('\n');
+            const lrcRegex = /^\[(\d{2}):(\d{2}\.\d{2,3})\](.*)/;
+            
+            const adjusted = lines.map(line => {
+                const match = line.match(lrcRegex);
+                if (match) {
+                    let totalSeconds = parseInt(match[1]) * 60 + parseFloat(match[2]);
+                    totalSeconds = Math.max(0, totalSeconds + offset);
+                    
+                    const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+                    const s = (totalSeconds % 60).toFixed(2).padStart(5, '0');
+                    return `[${m}:${s}]${match[3]}`;
+                }
+                return line;
+            });
+            
+            input.value = adjusted.join('\n');
+            parseLyrics();
+            statusText.innerText = `Shifted all times by ${offset}s`;
+        };
+
+        window.clearTimestamps = function() {
+            const input = document.getElementById('lyricsInput');
+            const lines = input.value.split('\n');
+            const lrcRegex = /^\[\d{2}:\d{2}\.\d{2,3}\](.*)/;
+            const cleaned = lines.map(line => {
+                const match = line.match(lrcRegex);
+                return match ? match[1].trim() : line.trim();
+            });
+            input.value = cleaned.join('\n');
+            parseLyrics();
+            statusText.innerText = "All timestamps cleared.";
+        };
+        
+        window.autoSyncLyrics = function() {
+            if(!audio.duration) return statusText.innerText = "Load audio first.";
+            const lines = document.getElementById('lyricsInput').value.split('\n').filter(l => l.trim()).map(l => l.replace(/\[\d{2}:\d{2}\.\d{2,3}\]/g, '').trim());
+            if(!lines.length) return statusText.innerText = "No lyrics.";
+            const interval = audio.duration / (lines.length + 1);
+            const synced = lines.map((text, i) => `[${fmtTime((i+0.5)*interval)}] ${text}`);
+            document.getElementById('lyricsInput').value = synced.join('\n');
+            parseLyrics();
+            statusText.innerText = "Lyrics distributed evenly.";
+        };
+
+        // --- SYNC ---
+        let isSyncing = false, syncIdx = 0, rawLines = [];
+        const syncBtn = document.getElementById('syncBtn');
+        syncBtn.addEventListener('click', () => {
+            if(!audio.src) return;
+            if(isSyncing) { 
+                isSyncing = false; syncBtn.classList.remove('active'); 
+                audio.pause(); isPlaying = false; 
+                document.getElementById('lyricsInput').value = lyricsData.lines.map(l => `[${fmtTime(l.time)}] ${l.text}`).join('\n');
+                return; 
+            }
+            rawLines = document.getElementById('lyricsInput').value.split('\n').filter(l => l.trim()).map(l => l.replace(/\[\d{2}:\d{2}\.\d{2,3}\]/g, '').trim());
+            isSyncing = true; syncIdx = 0; lyricsData = { isSynced: true, lines: [] };
+            syncBtn.classList.add('active');
+            initAudio(); if(audioCtx.state === 'suspended') audioCtx.resume();
+            audio.currentTime = 0; audio.play(); isPlaying = true;
+        });
+
+        window.addEventListener('keydown', e => {
+            if(isSyncing && e.code === 'Space') {
+                e.preventDefault();
+                if(syncIdx < rawLines.length) { lyricsData.lines.push({ time: audio.currentTime, text: rawLines[syncIdx] }); syncIdx++; }
+            }
+        });
+
+        function fmtTime(s) { return Math.floor(s/60).toString().padStart(2,'0') + ":" + (s%60).toFixed(2).padStart(5,'0'); }
+
+        function parseLyrics() {
+            const raw = document.getElementById('lyricsInput').value.split('\n').filter(l => l.trim());
+            const parsed = [];
+            const lrcRegex = /\[(\d{2}):(\d{2}(?:\.\d+)?)\](.*)/;
+            let hasLRC = false;
+            for (let line of raw) {
+                const match = line.match(lrcRegex);
+                if (match) { hasLRC = true; parsed.push({ time: parseInt(match[1]) * 60 + parseFloat(match[2]), text: match[3].trim() }); }
+            }
+            lyricsData = hasLRC ? { isSynced: true, lines: parsed } : { isSynced: false, lines: raw.map(l => l.trim()) };
+        }
+
+        // --- REFINED RENDERERS ---
+        const visualizers = {
+            nova_core: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const rad = parseFloat(document.getElementById('vizRadius').value);
+                const bw = parseFloat(document.getElementById('vizBarWidth').value);
+                const bc = parseFloat(document.getElementById('vizBarCount').value);
+                const R = (rad + energy.bass * 70) * (0.5 + motion * 0.5);
+                ctx.beginPath(); ctx.arc(0,0,R,0,Math.PI*2); ctx.strokeStyle = pCol; ctx.lineWidth = bw; ctx.stroke();
+                for(let i=0; i<bc; i++) {
+                    const a = (i/bc)*Math.PI*2, v = dataArray ? dataArray[i%dataArray.length] : 0, bh = (v/255)*280 * motion;
+                    ctx.save(); ctx.rotate(a);
+                    const grad = ctx.createLinearGradient(0, R, 0, R+bh); grad.addColorStop(0, pCol); grad.addColorStop(1, sCol);
+                    ctx.fillStyle = grad; ctx.fillRect(-bw/2, R, bw, bh);
+                    ctx.fillStyle = "#fff"; ctx.fillRect(-bw/2, R+bh, bw, 4);
+                    ctx.restore();
+                }
+            },
+            nova_split: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const rad = parseFloat(document.getElementById('vizRadius').value);
+                const bw = parseFloat(document.getElementById('vizBarWidth').value);
+                const bc = parseFloat(document.getElementById('vizBarCount').value);
+                const R = (rad + energy.bass * 50) * motion;
+                for(let i=0; i<bc; i++) {
+                    const a = (i/bc)*Math.PI*2, v = dataArray ? dataArray[i%dataArray.length] : 0;
+                    const bh = (v/255)*200 * motion;
+                    ctx.save(); ctx.rotate(a + globalTime * 0.2);
+                    ctx.fillStyle = i%2===0 ? pCol : sCol;
+                    ctx.fillRect(-bw/2, R + (i%2===0 ? 0 : 50), bw, bh);
+                    ctx.restore();
+                }
+            },
+            nova_dashed: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const rad = parseFloat(document.getElementById('vizRadius').value);
+                const bc = parseFloat(document.getElementById('vizBarCount').value);
+                const R = (rad + energy.bass * 30);
+                for(let i=0; i<bc; i++) {
+                    const a = (i/bc)*Math.PI*2, v = dataArray ? dataArray[i%dataArray.length] : 0;
+                    const bh = (v/255)*300 * motion;
+                    ctx.save(); ctx.rotate(a);
+                    ctx.strokeStyle = pCol; ctx.lineWidth = 4; ctx.setLineDash([10, 10]);
+                    ctx.beginPath(); ctx.moveTo(0, R); ctx.lineTo(0, R+bh); ctx.stroke();
+                    ctx.restore();
+                }
+            },
+            nova_mirrored: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const rad = parseFloat(document.getElementById('vizRadius').value);
+                const bw = parseFloat(document.getElementById('vizBarWidth').value);
+                const bc = parseFloat(document.getElementById('vizBarCount').value) / 2;
+                const R = (rad + energy.bass * 40);
+                for(let i=0; i<bc; i++) {
+                    const a = (i/bc)*Math.PI, v = dataArray ? dataArray[i] : 0, bh = (v/255)*300 * motion;
+                    ctx.save(); ctx.rotate(a);
+                    const g = ctx.createLinearGradient(0, R-bh, 0, R+bh); g.addColorStop(0, sCol); g.addColorStop(0.5, pCol); g.addColorStop(1, sCol);
+                    ctx.fillStyle = g; ctx.fillRect(-bw/2, R-bh, bw, bh*2); ctx.restore();
+                }
+            },
+            neon_hexagon: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const rad = parseFloat(document.getElementById('vizRadius').value);
+                const bw = parseFloat(document.getElementById('vizBarWidth').value);
+                ctx.strokeStyle = pCol; ctx.lineWidth = bw;
+                ctx.save(); ctx.rotate(globalTime * 0.5);
+                for(let i=0; i<6; i++) {
+                    const R = rad * (1 + energy.bass * 0.4) * motion;
+                    const a = (i/6)*Math.PI*2; ctx.rotate(a);
+                    ctx.beginPath(); ctx.moveTo(0, R); ctx.lineTo(R*Math.cos(Math.PI/3), R*Math.sin(Math.PI/3)); ctx.stroke();
+                }
+                ctx.restore();
+            },
+            fluid_horizon: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const bc = Math.floor(parseFloat(document.getElementById('vizBarCount').value) / 2);
+                ctx.translate(-cx, cy * 0.4); 
+                ctx.beginPath(); ctx.moveTo(0,0);
+                for(let i=0; i<=bc; i++) {
+                    const v = dataArray ? dataArray[i] : 0, y = Math.sin(i*0.15 + globalTime*4)*50 + (v/255)*-450 * motion;
+                    ctx.lineTo(i*(w/bc), y);
+                }
+                ctx.lineTo(w, 500); ctx.lineTo(0, 500); ctx.closePath();
+                const g1 = ctx.createLinearGradient(0, -450, 0, 500); g1.addColorStop(0, pCol); g1.addColorStop(1, 'transparent');
+                ctx.fillStyle = g1; ctx.fill();
+            },
+            spectrum_pillars: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const bc = parseFloat(document.getElementById('vizBarCount').value);
+                const bw = parseFloat(document.getElementById('vizBarWidth').value);
+                const barW = (w*0.9)/bc; ctx.translate(-w*0.45, 0);
+                for(let i=0; i<bc; i++) {
+                    const v = dataArray ? dataArray[i % 128] : 0, bh = (v/255)*550 * motion;
+                    const g = ctx.createLinearGradient(0, -bh/2, 0, bh/2); g.addColorStop(0, sCol); g.addColorStop(0.5, pCol); g.addColorStop(1, sCol);
+                    ctx.fillStyle = g; ctx.fillRect(i*barW, -bh/2, bw, bh);
+                    ctx.fillStyle = "#fff"; ctx.fillRect(i*barW, -bh/2-4, bw, 8);
+                }
+            },
+            starfield_ambient: (ctx, energy, pCol, sCol, w, h, cx, cy, motion, speed) => {
+                const bc = parseFloat(document.getElementById('vizBarCount').value);
+                stars.slice(0, bc * 2).forEach(s => {
+                    s.z -= (8 + energy.bass * 40) * speed; if(s.z <= 0) s.z = 1920;
+                    const sx = (s.x - cx) * (1920 / s.z), sy = (s.y - cy) * (1920 / s.z);
+                    const size = (1 - s.z / 1920) * 12 * motion;
+                    ctx.fillStyle = s.color; 
+                    if(energy.bass > 0.7) { 
+                        ctx.strokeStyle = s.color + "33"; ctx.lineWidth = 2;
+                        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(sx, sy); ctx.stroke(); 
+                    }
+                    ctx.beginPath(); ctx.arc(sx, sy, size, 0, Math.PI*2); ctx.fill();
+                });
+            },
+            starfield_slow: (ctx, energy, pCol, sCol, w, h, cx, cy, motion, speed) => {
+                const bc = parseFloat(document.getElementById('vizBarCount').value);
+                stars.slice(0, bc * 2).forEach(s => {
+                    s.z -= (2 + energy.bass * 10) * speed; if(s.z <= 0) s.z = 1920;
+                    const sx = (s.x - cx) * (1920 / s.z), sy = (s.y - cy) * (1920 / s.z);
+                    const size = (1 - s.z / 1920) * 8 * motion;
+                    ctx.fillStyle = s.color;
+                    ctx.beginPath(); ctx.arc(sx, sy, size, 0, Math.PI*2); ctx.fill();
+                });
+            },
+            nebula_flow: (ctx, energy, pCol, sCol, w, h, cx, cy, motion, speed) => {
+                const rad = parseFloat(document.getElementById('vizRadius').value);
+                nebula.forEach((n, i) => {
+                    n.phase += (0.01 + energy.bass * 0.05) * speed;
+                    const ox = Math.cos(n.phase) * 100, oy = Math.sin(n.phase) * 100;
+                    const g = ctx.createRadialGradient(n.x - cx + ox, n.y - cy + oy, 0, n.x - cx + ox, n.y - cy + oy, rad * (1 + energy.bass) * motion);
+                    g.addColorStop(0, (i % 2 === 0 ? pCol : sCol) + '33');
+                    g.addColorStop(1, 'transparent');
+                    ctx.fillStyle = g;
+                    ctx.globalCompositeOperation = 'screen';
+                    ctx.fillRect(-cx, -cy, w, h);
+                });
+                ctx.globalCompositeOperation = 'source-over';
+            },
+            beat_reactor: (ctx, energy, pCol, sCol, w, h, cx, cy, motion, speed) => {
+                const rad = parseFloat(document.getElementById('vizRadius').value);
+                const isBeat = energy.bass > 0.85;
+                if(isBeat && Math.random() > 0.5) { shockwaves.push({ r: 100, a: 1, w: 2 + energy.bass * 10 }); }
+                ctx.save();
+                shockwaves.forEach((s, i) => {
+                    s.r += 20 * speed; s.a -= 0.02 * speed; if(s.a <= 0) { shockwaves.splice(i, 1); return; }
+                    ctx.beginPath(); ctx.arc(0,0, s.r, 0, Math.PI*2); ctx.strokeStyle = pCol; ctx.lineWidth = s.w; ctx.globalAlpha = s.a; ctx.stroke();
+                });
+                ctx.globalAlpha = 1;
+                const r = (rad * 0.7 + energy.bass * 150) * motion;
+                const g = ctx.createRadialGradient(0,0,0,0,0,r);
+                g.addColorStop(0, '#fff'); g.addColorStop(0.2, pCol); g.addColorStop(1, 'transparent');
+                ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0,0, r, 0, Math.PI*2); ctx.fill();
+                for(let i=0; i<8; i++) {
+                    const a = globalTime * 2 + (i * Math.PI / 4);
+                    const lx = Math.cos(a) * (r + 50), ly = Math.sin(a) * (r + 50);
+                    ctx.strokeStyle = sCol; ctx.lineWidth = 4 * energy.bass;
+                    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(lx * (1+energy.bass), ly * (1+energy.bass)); ctx.stroke();
+                }
+                ctx.restore();
+            },
+            heartbeat_pulse: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const rad = parseFloat(document.getElementById('vizRadius').value);
+                const r = (rad * 0.7 + energy.bass * 150) * motion;
+                ctx.save(); ctx.fillStyle = pCol; ctx.shadowBlur = 100 * energy.bass; ctx.shadowColor = pCol;
+                ctx.beginPath(); ctx.moveTo(0, 50); ctx.bezierCurveTo(-r/2, -r/2, -r, r/3, 0, r); ctx.bezierCurveTo(r, r/3, r/2, -r/2, 0, 50); ctx.fill();
+                ctx.globalAlpha = 0.5; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(0,0, r * 0.2, 0, Math.PI*2); ctx.fill(); ctx.restore();
+            },
+            neon_ekg: (ctx, energy, pCol, sCol, w, h, cx, cy, motion) => {
+                const bw = parseFloat(document.getElementById('vizBarWidth').value);
+                ctx.save(); ctx.translate(-cx, 0); ctx.beginPath(); ctx.strokeStyle = pCol; ctx.lineWidth = bw; ctx.shadowBlur = 30; ctx.shadowColor = pCol;
+                ctx.moveTo(0, 0);
+                for(let i=0; i<w; i+=10) {
+                    let y = 0; const phase = (i/w) * Math.PI * 10 + globalTime * 5;
+                    if (Math.abs(Math.sin(phase)) > 0.9) y = Math.sin(phase * 10) * 300 * energy.bass;
+                    else y = Math.sin(phase) * 20;
+                    ctx.lineTo(i, y);
+                }
+                ctx.stroke(); ctx.restore();
+            },
+            vectro_lattice: (ctx, energy, pCol, sCol, w, h, cx, cy, motion, speed) => {
+                const bc = parseFloat(document.getElementById('vizBarCount').value);
+                ctx.save(); ctx.translate(-cx, -cy); ctx.strokeStyle = pCol; ctx.lineWidth = 1;
+                nodes.slice(0, bc).forEach((n, i) => {
+                    n.x += n.vx * speed * (1 + energy.bass); n.y += n.vy * speed * (1 + energy.bass);
+                    if(n.x < 0 || n.x > w) n.vx *= -1; if(n.y < 0 || n.y > h) n.vy *= -1;
+                    nodes.slice(0, bc).forEach((n2, j) => {
+                        if(i === j) return; const dist = Math.hypot(n.x - n2.x, n.y - n2.y);
+                        if(dist < 300) { ctx.globalAlpha = (1 - dist / 300) * 0.5 * (0.2 + energy.bass); ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n2.x, n2.y); ctx.stroke(); }
+                    });
+                    ctx.globalAlpha = 0.8; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(n.x, n.y, 2 + energy.bass * 4, 0, Math.PI*2); ctx.fill();
+                });
+                ctx.restore();
+            }
+        };
+
+        const animations = {
+            nova_hybrid: (ctx, text, fade, bounce, energy, pCol, sCol) => {
+                const glow = document.getElementById('glowAmount').value;
+                const motion = document.getElementById('motionIntensity').value;
+                const speed = document.getElementById('bgSpeed').value;
+                const spacing = document.getElementById('letterSpacing').value;
+                const stroke = document.getElementById('textStroke').value;
+
+                ctx.letterSpacing = `${spacing}px`;
+                const sc = bounce * (1 + energy.bass * 0.15 * motion); ctx.scale(sc, sc);
+                const off = energy.bass * 25 * motion;
+                for(let i=1; i<4; i++) { 
+                    ctx.globalAlpha = (0.2 * fade) / i; 
+                    ctx.fillText(text, Math.sin(globalTime*5*speed)*i*8*motion, i * 12 * Math.cos(globalTime * 3 * speed)); 
+                }
+                ctx.globalAlpha = 0.4 * fade; ctx.fillStyle = "#f00"; ctx.fillText(text, Math.random()*off, Math.random()*off);
+                ctx.fillStyle = "#0ff"; ctx.fillText(text, -Math.random()*off, -Math.random()*off);
+                const grad = ctx.createLinearGradient(-300, 0, 300, 0); grad.addColorStop(0, pCol); grad.addColorStop(1, sCol);
+                ctx.globalAlpha = fade; ctx.shadowBlur = glow; ctx.shadowColor = pCol; ctx.fillStyle = grad;
+                if(stroke > 0) { ctx.strokeStyle = "#fff"; ctx.lineWidth = stroke; ctx.strokeText(text, 0, 0); }
+                ctx.fillText(text, (Math.random()-0.5)*off*0.2, (Math.random()-0.5)*off*0.2);
+            },
+            nova_pop: (ctx, text, fade, bounce, energy, pCol) => {
+                const glow = document.getElementById('glowAmount').value;
+                const motion = document.getElementById('motionIntensity').value;
+                const spacing = document.getElementById('letterSpacing').value;
+                const stroke = document.getElementById('textStroke').value;
+                ctx.letterSpacing = `${spacing}px`;
+                const sc = bounce * (1 + energy.bass * 0.12 * motion); ctx.scale(sc, sc);
+                ctx.shadowBlur = glow * 1.5; ctx.shadowColor = pCol; ctx.fillStyle = "#fff"; 
+                if(stroke > 0) { ctx.strokeStyle = pCol; ctx.lineWidth = stroke; ctx.strokeText(text, 0, 0); }
+                ctx.fillText(text, 0, 0);
+            },
+            ghost_trail: (ctx, text, fade, bounce, energy, pCol) => {
+                const glow = document.getElementById('glowAmount').value;
+                const motion = document.getElementById('motionIntensity').value;
+                const speed = document.getElementById('bgSpeed').value;
+                const spacing = document.getElementById('letterSpacing').value;
+                ctx.letterSpacing = `${spacing}px`;
+                ctx.fillStyle = "#fff";
+                for(let i=1; i<6; i++) { 
+                    ctx.globalAlpha = (0.2 * fade) / i; 
+                    const off = i * 15 * Math.sin(globalTime * 3 * speed + i) * motion;
+                    ctx.fillText(text, off, i * 10 * motion); 
+                }
+                ctx.globalAlpha = fade;
+                ctx.shadowBlur = (glow * 0.6) * energy.bass; ctx.shadowColor = pCol;
+                ctx.fillText(text, 0, 0);
+                ctx.shadowBlur = 0;
+            },
+            glitch_shake: (ctx, text, fade, bounce, energy, pCol) => {
+                const motion = document.getElementById('motionIntensity').value;
+                const spacing = document.getElementById('letterSpacing').value;
+                ctx.letterSpacing = `${spacing}px`;
+                const off = energy.bass * 40 * motion; ctx.globalAlpha = 0.6 * fade;
+                ctx.fillStyle = "#f00"; ctx.fillText(text, Math.random()*off, Math.random()*off);
+                ctx.fillStyle = "#0ff"; ctx.fillText(text, -Math.random()*off, -Math.random()*off);
+                ctx.globalAlpha = fade; ctx.fillStyle = "#fff"; ctx.fillText(text, 0, 0);
+            },
+            typewriter: (ctx, text, fade, bounce, energy, pCol) => {
+                const speed = document.getElementById('bgSpeed').value;
+                const spacing = document.getElementById('letterSpacing').value;
+                ctx.letterSpacing = `${spacing}px`;
+                ctx.fillStyle = "#fff";
+                const len = Math.floor(text.length * Math.min(1, fade * 1.5));
+                ctx.fillText(text.substring(0, len), 0, 0);
+                if (fade < 1 && Math.floor(globalTime * 10 * speed) % 2 === 0) {
+                    const tw = ctx.measureText(text.substring(0, len)).width;
+                    ctx.fillRect(tw/2 + 5, -40, 4, 80);
+                }
+            },
+            zoom_burst: (ctx, text, fade, bounce, energy, pCol) => {
+                const glow = document.getElementById('glowAmount').value;
+                const motion = document.getElementById('motionIntensity').value;
+                const spacing = document.getElementById('letterSpacing').value;
+                ctx.letterSpacing = `${spacing}px`;
+                const sc = 0.4 + (fade * 0.6 + energy.bass * 0.2) * motion; 
+                ctx.scale(sc, sc); ctx.globalAlpha = fade;
+                ctx.shadowBlur = glow * fade; ctx.shadowColor = pCol;
+                ctx.fillText(text, 0, 0);
+                ctx.shadowBlur = 0;
+            },
+            blur_bloom: (ctx, text, fade, bounce, energy, pCol) => {
+                const glow = document.getElementById('glowAmount').value;
+                const motion = document.getElementById('motionIntensity').value;
+                const spacing = document.getElementById('letterSpacing').value;
+                ctx.letterSpacing = `${spacing}px`;
+                ctx.fillStyle = "#fff";
+                ctx.filter = `blur(${Math.max(0, (1-fade)*40)}px)`; 
+                ctx.globalAlpha = fade;
+                ctx.shadowBlur = glow * energy.bass * motion; ctx.shadowColor = pCol;
+                ctx.fillText(text, 0, 0); 
+                ctx.filter = "none"; ctx.shadowBlur = 0;
+            },
+            cosmic_drift: (ctx, text, fade, bounce, energy, pCol, sCol) => {
+                const glow = document.getElementById('glowAmount').value;
+                const motion = document.getElementById('motionIntensity').value;
+                const spacing = document.getElementById('letterSpacing').value;
+                ctx.letterSpacing = `${spacing}px`;
+                ctx.globalAlpha = fade;
+                const sc = 0.8 + energy.bass * 0.3 * motion;
+                ctx.scale(sc, sc);
+                
+                // Outer glow
+                ctx.shadowBlur = glow; ctx.shadowColor = sCol;
+                ctx.fillStyle = "#fff";
+                ctx.fillText(text, 0, 0);
+                
+                // Particle streak
+                for(let i=0; i<10; i++) {
+                    const x = (Math.random() - 0.5) * 1000 * (1-fade) * motion;
+                    const y = (Math.random() - 0.5) * 200 * motion;
+                    ctx.globalAlpha = (1-fade) * 0.5;
+                    ctx.fillRect(x, y, 40 * motion, 2);
+                }
+                ctx.shadowBlur = 0;
+            }
+        };
+
+        window.forgeAIAnimation = function() {
+            try {
+                const prompt = document.getElementById('aiPrompt').value.toLowerCase();
+                const id = "ai_" + Date.now();
+                const name = prompt ? prompt.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : "Mystic Forge";
+                
+                const traits = {
+                    glitch: prompt.includes('glitch') || prompt.includes('digital') || prompt.includes('hack'),
+                    fire: prompt.includes('fire') || prompt.includes('flame') || prompt.includes('burn') || prompt.includes('hot'),
+                    water: prompt.includes('water') || prompt.includes('ocean') || prompt.includes('fluid') || prompt.includes('flow'),
+                    space: prompt.includes('space') || prompt.includes('star') || prompt.includes('nebula') || prompt.includes('cosmic'),
+                    ghost: prompt.includes('ghost') || prompt.includes('spirit') || prompt.includes('ethereal') || prompt.includes('fade'),
+                    energy: prompt.includes('energy') || prompt.includes('electric') || prompt.includes('volt') || prompt.includes('power')
+                };
+
+                animations[id] = (ctx, text, fade, bounce, energy, pCol, sCol) => {
+                    const glow = parseFloat(document.getElementById('glowAmount')?.value || 50);
+                    const motion = parseFloat(document.getElementById('motionIntensity')?.value || 1.0);
+                    const speed = parseFloat(document.getElementById('bgSpeed')?.value || 1.0);
+                    
+                    ctx.globalAlpha = fade;
+                    const sc = (bounce || 1) * (1 + (energy?.bass || 0) * 0.2 * motion);
+                    ctx.scale(sc, sc);
+
+                    if(traits.glitch) {
+                        const off = 30 * (energy?.bass || 0) * motion;
+                        ctx.fillStyle = "#ff0044"; ctx.fillText(text, (Math.random()-0.5)*off, (Math.random()-0.5)*off);
+                        ctx.fillStyle = "#00ffff"; ctx.fillText(text, (Math.random()-0.5)*off, (Math.random()-0.5)*off);
+                    }
+                    
+                    if(traits.fire) {
+                        ctx.shadowBlur = glow; ctx.shadowColor = "#ff4400";
+                        for(let i=0; i<3; i++) {
+                            ctx.globalAlpha = 0.3 * fade;
+                            ctx.fillStyle = i%2 === 0 ? "#ffcc00" : "#ff4400";
+                            ctx.fillText(text, (Math.random()-0.5)*15, -i * 15 * (energy?.bass || 0) * motion - (Math.random()*20));
+                        }
+                    }
+
+                    if(traits.water) {
+                        for(let i=0; i<5; i++) {
+                            ctx.globalAlpha = (0.2 * fade) / (i+1);
+                            ctx.fillStyle = sCol;
+                            const shift = Math.sin(globalTime * 3 * speed + i) * 30 * motion;
+                            ctx.fillText(text, shift, i * 10);
+                        }
+                    }
+
+                    if(traits.space) {
+                        ctx.shadowBlur = glow; ctx.shadowColor = "#fff";
+                        for(let i=0; i<10; i++) {
+                            const r = Math.random() * 400 * (1-fade);
+                            const a = Math.random() * Math.PI * 2;
+                            ctx.fillStyle = "#fff"; ctx.globalAlpha = Math.random() * fade;
+                            ctx.beginPath(); ctx.arc(Math.cos(a)*r, Math.sin(a)*r, 2, 0, Math.PI*2); ctx.fill();
+                        }
+                    }
+
+                    if(traits.ghost) {
+                        ctx.filter = `blur(${Math.sin(globalTime*4)*10}px)`;
+                        ctx.globalAlpha = 0.5 * fade; ctx.fillText(text, 0, 0); ctx.filter = "none";
+                    }
+
+                    ctx.globalAlpha = fade;
+                    ctx.shadowBlur = traits.energy ? glow * 2 : glow;
+                    ctx.shadowColor = pCol; ctx.fillStyle = "#fff";
+                    ctx.fillText(text, 0, 0);
+                };
+
+                const opt = document.createElement('option');
+                opt.value = id; opt.innerText = "✨ AI: " + name;
+                document.getElementById('animStyle').appendChild(opt);
+                document.getElementById('animStyle').value = id;
+                
+                statusText.innerText = `AI Forged: ${name}`;
+                statusText.style.color = "#a855f7";
+            } catch (err) {
+                console.error(err);
+                statusText.innerText = "AI Forge Error. Check Console.";
+            }
+        };
+
+        window.forgeAIVisualizer = function() {
+            try {
+                const prompt = document.getElementById('aiPrompt').value.toLowerCase();
+                const id = "viz_" + Date.now();
+                const name = prompt ? prompt.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : "Nova Vision";
+                
+                const traits = {
+                    mountain: prompt.includes('mountain') || prompt.includes('peak') || prompt.includes('land'),
+                    cube: prompt.includes('cube') || prompt.includes('box') || prompt.includes('block') || prompt.includes('3d'),
+                    circle: prompt.includes('circle') || prompt.includes('round') || prompt.includes('ring'),
+                    particle: prompt.includes('particle') || prompt.includes('dust') || prompt.includes('rain'),
+                    neon: prompt.includes('neon') || prompt.includes('glow') || prompt.includes('bright')
+                };
+
+                visualizers[id] = (ctx, energy, pCol, sCol, w, h, cx, cy, motion, speed) => {
+                    ctx.save();
+                    if(traits.mountain) {
+                        ctx.beginPath(); ctx.moveTo(-cx, 200);
+                        for(let i=0; i<w; i+=50) {
+                            const h_val = Math.sin(i*0.01 + globalTime) * 100 + (dataArray ? dataArray[Math.floor(i/10)] : 0) * motion;
+                            ctx.lineTo(i-cx, 300 - h_val);
+                        }
+                        ctx.lineTo(cx, 500); ctx.lineTo(-cx, 500);
+                        const g = ctx.createLinearGradient(0,0,0,500); g.addColorStop(0, pCol); g.addColorStop(1, 'transparent');
+                        ctx.fillStyle = g; ctx.fill();
+                    }
+                    
+                    if(traits.cube) {
+                        const size = 100 * (1 + (energy?.bass || 0));
+                        ctx.strokeStyle = sCol; ctx.lineWidth = 2;
+                        ctx.rotate(globalTime);
+                        ctx.strokeRect(-size/2, -size/2, size, size);
+                        ctx.strokeRect(-size/4, -size/4, size/2, size/2);
+                    }
+
+                    if(traits.circle) {
+                        for(let i=0; i<5; i++) {
+                            ctx.beginPath(); ctx.arc(0,0, (100 + i*50) * (1+(energy?.mid || 0)), 0, Math.PI*2);
+                            ctx.strokeStyle = i%2 === 0 ? pCol : sCol;
+                            ctx.globalAlpha = 0.3; ctx.stroke();
+                        }
+                    }
+
+                    if(traits.particle) {
+                        for(let i=0; i<20; i++) {
+                            const x = Math.sin(globalTime + i) * cx;
+                            const y = Math.cos(globalTime * 0.5 + i) * cy;
+                            ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x, y, 2 + (energy?.treble || 0) * 10, 0, Math.PI*2); ctx.fill();
+                        }
+                    }
+                    ctx.restore();
+                };
+
+                const opt = document.createElement('option');
+                opt.value = id; opt.innerText = "✨ AI: " + name;
+                document.getElementById('vizStyle').appendChild(opt);
+                document.getElementById('vizStyle').value = id;
+                
+                statusText.innerText = `AI Forged: ${name}`;
+                statusText.style.color = "#00f2fe";
+            } catch (err) {
+                console.error(err);
+                statusText.innerText = "AI Forge Error. Check Console.";
+            }
+        };
+
+        window.resetStudio = function() {
+            if(!confirm("Reset all settings to default?")) return;
+            
+            // Engines
+            document.getElementById('animStyle').value = "nova_hybrid";
+            document.getElementById('vizStyle').value = "nova_core";
+            document.getElementById('primaryColor').value = "#00f2fe";
+            document.getElementById('secondaryColor').value = "#a855f7";
+            
+            // Tuning
+            document.getElementById('vizRadius').value = 320;
+            document.getElementById('vizBarWidth').value = 6;
+            document.getElementById('vizBarCount').value = 120;
+            
+            // Typography
+            document.getElementById('fontFamily').value = "'Outfit', sans-serif";
+            document.getElementById('fontSize').value = 100;
+            document.getElementById('fontWeight').value = "800";
+            document.getElementById('letterSpacing').value = 0;
+            document.getElementById('textStroke').value = 0;
+            
+            // Motion
+            document.getElementById('audioSens').value = 1.0;
+            document.getElementById('motionIntensity').value = 1.0;
+            document.getElementById('bgSpeed').value = 1.0;
+            document.getElementById('elasticity').value = 0.12;
+            
+            // Effects
+            document.getElementById('glowAmount').value = 50;
+            document.getElementById('bgBlur').value = 0;
+            document.getElementById('vignette').value = 0.5;
+            document.getElementById('grain').value = 0.05;
+            
+            // Update labels
+            const labels = ['fontSize', 'spacing', 'stroke'];
+            labels.forEach(l => {
+                const el = document.getElementById(l === 'spacing' ? 'letterSpacing' : (l === 'stroke' ? 'textStroke' : l));
+                const valEl = document.getElementById('val_' + l);
+                if(valEl) valEl.innerText = el.value;
+            });
+
+            statusText.innerText = "Studio Reset Complete.";
+            statusText.style.color = "#888";
+        };
+
+        function draw() {
+            requestAnimationFrame(draw);
+            const speed = parseFloat(document.getElementById('bgSpeed').value);
+            const sens = parseFloat(document.getElementById('audioSens').value);
+            const motion = parseFloat(document.getElementById('motionIntensity').value);
+            const elasticity = parseFloat(document.getElementById('elasticity').value);
+            const blur = parseFloat(document.getElementById('bgBlur').value);
+            const vig = parseFloat(document.getElementById('vignette').value);
+            const grain = parseFloat(document.getElementById('grain').value);
+
+            globalTime += 0.016 * speed;
+            const w = canvas.width, h = canvas.height, cx = w/2, cy = h/2;
+            const pCol = document.getElementById('primaryColor').value;
+            const sCol = document.getElementById('secondaryColor').value;
+            
+            if (analyser && isPlaying) {
+                analyser.getByteFrequencyData(dataArray);
+                let b=0, m=0, t=0;
+                for(let i=0; i<10; i++) b += dataArray[i];
+                for(let i=20; i<60; i++) m += dataArray[i];
+                for(let i=100; i<150; i++) t += dataArray[i];
+                energy.bass = (b/10/255) * sens; energy.mid = (m/40/255) * sens; energy.treble = (t/50/255) * sens;
+            } else { energy.bass = 0; energy.mid = 0; energy.treble = 0; }
+
+            ctx.fillStyle = "#010103"; ctx.fillRect(0,0,w,h);
+            if(blur > 0) ctx.filter = `blur(${blur}px)`;
+            
+            blobs.forEach((b, i) => {
+                b.x += b.vx * (1 + energy.bass * 2.5) * speed; b.y += b.vy * (1 + energy.bass * 2.5) * speed;
+                if(b.x < 0 || b.x > 1) b.vx *= -1; if(b.y < 0 || b.y > 1) b.vy *= -1;
+                const g = ctx.createRadialGradient(b.x*w, b.y*h, 0, b.x*w, b.y*h, b.size * (1 + energy.bass));
+                g.addColorStop(0, (i%2===0 ? pCol : sCol) + '18'); g.addColorStop(1, 'transparent');
+                ctx.fillStyle = g; ctx.globalCompositeOperation = 'screen'; ctx.fillRect(0,0,w,h);
+            });
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.filter = "none";
+
+            const style = document.getElementById('vizStyle').value;
+            ctx.save(); ctx.translate(cx, cy);
+            if(visualizers[style]) visualizers[style](ctx, energy, pCol, sCol, w, h, cx, cy, motion, speed);
+            ctx.restore();
+
+            let idx = -1;
+            if (lyricsData.isSynced) {
+                for (let i = lyricsData.lines.length - 1; i >= 0; i--) { if (audio.currentTime >= lyricsData.lines[i].time) { idx = i; break; } }
+            } else if (audio.duration && lyricsData.lines.length > 0) {
+                idx = Math.min(Math.floor(audio.currentTime / (audio.duration / lyricsData.lines.length)), lyricsData.lines.length - 1);
+            }
+
+            if(idx !== activeIdx && idx !== -1) { 
+                activeIdx = idx; 
+                bounce = 1 + (0.4 * motion); 
+                fade = 0; 
+            }
+            bounce += (1.0 - bounce) * parseFloat(elasticity); fade = Math.min(1, fade + 0.08);
+
+            if(idx !== -1) {
+                const currText = lyricsData.isSynced ? lyricsData.lines[idx].text : lyricsData.lines[idx];
+                const nextText = (idx + 1 < lyricsData.lines.length) ? (lyricsData.isSynced ? lyricsData.lines[idx+1].text : lyricsData.lines[idx+1]) : "";
+                const anim = document.getElementById('animStyle').value;
+                const fFam = document.getElementById('fontFamily').value;
+                const fSize = document.getElementById('fontSize').value;
+                const fWeight = document.getElementById('fontWeight').value;
+                const spacing = document.getElementById('letterSpacing').value;
+
+                ctx.save(); ctx.translate(cx, cy);
+                ctx.font = `${fWeight} ${fSize}px ${fFam}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                ctx.letterSpacing = `${spacing}px`;
+                
+                ctx.save();
+                if(animations[anim]) animations[anim](ctx, currText, fade, bounce, energy, pCol, sCol);
+                ctx.restore();
+
+                if(nextText) {
+                    ctx.save(); ctx.translate(0, parseInt(fSize) + 50);
+                    ctx.font = `${fWeight === '800' ? '600' : '300'} ${parseInt(fSize) * 0.65}px ${fFam}`; ctx.globalAlpha = 0.25 * fade;
+                    ctx.fillStyle = "#fff"; 
+                    ctx.letterSpacing = `${spacing * 0.5}px`;
+                    ctx.fillText(nextText, 0, 0);
+                    ctx.restore();
+                }
+                ctx.restore();
+            }
+
+            // Cinematic Post-Processing
+            if(vig > 0) {
+                const vg = ctx.createRadialGradient(cx, cy, w * 0.2, cx, cy, w * 0.8);
+                vg.addColorStop(0, 'transparent'); 
+                vg.addColorStop(1, `rgba(0,0,0,${vig})`);
+                ctx.fillStyle = vg; ctx.fillRect(0,0,w,h);
+            }
+            if(grain > 0) {
+                ctx.globalAlpha = grain;
+                for(let i=0; i<30; i++) {
+                    const gx = Math.random() * w, gy = Math.random() * h;
+                    const gs = 1 + Math.random() * 2;
+                    ctx.fillStyle = Math.random() > 0.5 ? "#fff" : "#000";
+                    ctx.fillRect(gx, gy, gs, gs);
+                }
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        playBtn.addEventListener('click', () => {
+            initAudio(); if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(isPlaying) { 
+                audio.pause(); isPlaying = false; 
+                playBtn.innerHTML = "<span>▶</span> PREVIEW STUDIO"; 
+                playBtn.style.filter = "none";
+                playBtn.classList.add('ready');
+            }
+            else { 
+                parseLyrics();
+                // Auto-sync if no timestamps detected
+                if(!lyricsData.isSynced && lyricsData.lines.length > 0 && audio.duration) {
+                    autoSyncLyrics();
+                }
+                audio.play(); isPlaying = true; 
+                playBtn.innerHTML = "<span>⏸</span> PAUSE SESSION"; 
+                playBtn.style.filter = "hue-rotate(45deg)";
+                playBtn.classList.remove('ready');
+                draw(); 
+            }
+        });
+
+        recordBtn.addEventListener('click', () => {
+            if(isRecording) { mediaRecorder.stop(); return; }
+            initAudio(); parseLyrics(); audio.currentTime = 0;
+            const stream = canvas.captureStream(60);
+            const combined = new MediaStream([...stream.getVideoTracks(), ...destination.stream.getAudioTracks()]);
+            mediaRecorder = new MediaRecorder(combined, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 15000000 });
+            recordedChunks = [];
+            mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                downloadBtn.href = URL.createObjectURL(new Blob(recordedChunks, { type: 'video/webm' }));
+                downloadBtn.style.display = 'flex'; isRecording = false; recordBtn.innerText = "⏺ Export Final Master";
+            };
+            mediaRecorder.start(); isRecording = true; recordBtn.innerText = "⏹ STOP EXPORT";
+        });
+    </script>
+</body>
+</html>
