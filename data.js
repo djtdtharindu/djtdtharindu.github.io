@@ -12,7 +12,7 @@ const PORTFOLIO_DATA = {
         name: "Tharindu Dilshan",
         initials: "TD",
         tagline: "BSc. Physical Science graduate passionate about Full Stack Development, Quality Assurance, and building innovative software solutions.",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
+        image:"https://imgur.com/eUMVcEt",
         roles: [
             "Full Stack Developer",
             "Quality Assurance Engineer",
