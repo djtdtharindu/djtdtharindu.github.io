@@ -307,6 +307,184 @@
         }, { passive: true });
     }
 
+    // ── 13. Contact Form & Admin Logic ────────────────────
+    function initContactForm() {
+        const form = $('contact-form');
+        if (!form) return;
+
+        // WhatsApp Click
+        $('btn-whatsapp').addEventListener('click', () => {
+            const name = $('c-name').value;
+            const msg  = $('c-message').value;
+            if (!name || !msg) return alert('Please enter your name and message first.');
+            
+            const phone = D.personal.phone.replace(/\D/g, ''); // Extract only digits
+            const text = encodeURIComponent(`Hello Tharindu!\n\nName: ${name}\nMessage: ${msg}`);
+            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        });
+
+        // Email Submission (via Formspree)
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = $('btn-email');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<span>Sending...</span>';
+            btn.disabled = true;
+
+            // Formspree Integration
+            const formData = {
+                name: $('c-name').value,
+                email: $('c-email').value,
+                message: $('c-message').value
+            };
+
+            fetch('https://formspree.io/f/xvgozvww', { // Default Formspree ID (user should replace)
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                btn.innerHTML = '<span>Success!</span>';
+                form.reset();
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 3000);
+            })
+            .catch(() => {
+                alert('Email service error. Try WhatsApp instead!');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        });
+    }
+
+    // ── 14. Admin Mode (The Management Tool) ─────────────
+    function initAdminMode() {
+        const trigger = $('admin-trigger');
+        const modal   = $('admin-modal');
+        const close   = $('admin-close-btn');
+        let localData = JSON.parse(JSON.stringify(D));
+
+        trigger.addEventListener('click', () => {
+            modal.style.display = 'flex';
+            renderTab('personal-tab');
+        });
+
+        close.addEventListener('click', () => modal.style.display = 'none');
+
+        // Tab Logic
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn, .tab-content').forEach(el => el.classList.remove('active'));
+                btn.classList.add('active');
+                $(btn.dataset.tab).classList.add('active');
+                renderTab(btn.dataset.tab);
+            });
+        });
+
+        function renderTab(tabId) {
+            if (tabId === 'personal-tab') renderPersonal();
+            if (tabId === 'projects-tab') renderProjects();
+            if (tabId === 'export-tab') updateExportCode();
+        }
+
+        // Global Update Helper
+        window.updateField = (path, value) => {
+            const keys = path.split('.');
+            let obj = localData;
+            for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
+            obj[keys[keys.length - 1]] = value;
+            updateExportCode();
+        };
+
+        function renderPersonal() {
+            const p = localData.personal;
+            $('personal-tab').innerHTML = `
+                <div class="admin-form">
+                    <h3>Personal Information</h3>
+                    <div class="admin-form-row">
+                        <div class="admin-form-group"><label>Full Name</label><input type="text" value="${p.name}" oninput="updateField('personal.name', this.value)"></div>
+                        <div class="admin-form-group"><label>Tagline</label><input type="text" value="${p.tagline}" oninput="updateField('personal.tagline', this.value)"></div>
+                    </div>
+                    <div class="admin-form-row">
+                        <div class="admin-form-group"><label>Email</label><input type="text" value="${p.email}" oninput="updateField('personal.email', this.value)"></div>
+                        <div class="admin-form-group"><label>Phone</label><input type="text" value="${p.phone}" oninput="updateField('personal.phone', this.value)"></div>
+                    </div>
+                    <div class="admin-form-group"><label>Location</label><input type="text" value="${p.location}" oninput="updateField('personal.location', this.value)"></div>
+                    
+                    <h3 class="mt-4">Education</h3>
+                    ${localData.education.map((e, i) => `
+                        <div class="admin-form-row" style="background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; margin-bottom:10px;">
+                            <div class="admin-form-group"><label>Degree</label><input type="text" value="${e.degree}" oninput="updateField('education.${i}.degree', this.value)"></div>
+                            <div class="admin-form-group"><label>Period/Date</label><input type="text" value="${e.period}" oninput="updateField('education.${i}.period', this.value)"></div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderProjects() {
+            const list = $('admin-project-list');
+            list.innerHTML = localData.projects.map((p, idx) => `
+                <div class="admin-project-item" style="flex-direction:column; align-items:flex-start; gap:10px;">
+                    <div style="display:flex; justify-content:space-between; width:100%;">
+                        <h4>${p.title}</h4>
+                        <button class="btn-demo" style="background:#ff5f56; padding:4px 10px;" onclick="removeProject(${idx})">Delete</button>
+                    </div>
+                    <div class="admin-form-row" style="width:100%;">
+                        <div class="admin-form-group"><label>Title</label><input type="text" value="${p.title}" oninput="updateField('projects.${idx}.title', this.value)"></div>
+                        <div class="admin-form-group"><label>Description</label><input type="text" value="${p.description}" oninput="updateField('projects.${idx}.description', this.value)"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.removeProject = (idx) => {
+            localData.projects.splice(idx, 1);
+            renderProjects();
+            updateExportCode();
+        };
+
+        $('btn-add-project').addEventListener('click', () => {
+            localData.projects.push({
+                id: "new-proj-" + Date.now(),
+                icon: "code",
+                title: "New Project",
+                description: "Description here...",
+                tags: ["Java"],
+                sourceFile: "",
+                demoType: "none",
+                demo: []
+            });
+            renderProjects();
+            updateExportCode();
+        });
+
+        function updateExportCode() {
+            const code = `const PORTFOLIO_DATA = ${JSON.stringify(localData, null, 4)};`;
+            $('code-export-pre').textContent = code;
+        }
+
+        $('btn-copy-code').addEventListener('click', () => {
+            navigator.clipboard.writeText($('code-export-pre').textContent);
+            const btn = $('btn-copy-code');
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+        });
+
+        // Add a "Apply & Close" button to the modal
+        const applyBtn = document.createElement('button');
+        applyBtn.className = 'btn btn-primary mt-4';
+        applyBtn.style.width = '100%';
+        applyBtn.textContent = 'Apply Changes Temporarily (Preview)';
+        applyBtn.onclick = () => {
+            // Hot-swap the live data (requires global exposure)
+            location.reload(); // Simplest way since data.js is hardcoded, but user can copy code first
+        };
+    }
+
     // ── BOOT ──────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
         buildNav();
@@ -320,6 +498,8 @@
         initScrollEffects();
         initModal();
         initOrbs();
+        initContactForm();
+        initAdminMode();
     });
 
 })();
