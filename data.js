@@ -20,7 +20,7 @@ const PORTFOLIO_DATA = {
             "Software Engineer"
         ],
         email: "djtdtharindudilshan@gmail.com",
-        phone: "0704473073",
+        phone: "+94704473073",
         location: "Colombo, Sri Lanka",
         linkedin: "https://www.linkedin.com/in/Tharindu-dilshan-Jayakody",
         cvFile: "Tharindu Dilshan cv.pdf"
