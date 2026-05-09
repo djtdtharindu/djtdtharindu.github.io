@@ -66,6 +66,7 @@
         $('hero-name').textContent = p.name;
         $('hero-name').dataset.text = p.name;
         $('hero-tagline').textContent = p.tagline;
+        if (p.image) $('profile-img').src = p.image;
 
         $('hero-cta').innerHTML = `
             <a href="#projects" class="btn btn-primary">
@@ -409,10 +410,13 @@
                         <div class="admin-form-group"><label>Tagline</label><input type="text" value="${p.tagline}" oninput="updateField('personal.tagline', this.value)"></div>
                     </div>
                     <div class="admin-form-row">
+                        <div class="admin-form-group"><label>Profile Image URL</label><input type="text" value="${p.image || ''}" oninput="updateField('personal.image', this.value); document.getElementById('profile-img').src=this.value"></div>
+                        <div class="admin-form-group"><label>Location</label><input type="text" value="${p.location}" oninput="updateField('personal.location', this.value)"></div>
+                    </div>
+                    <div class="admin-form-row">
                         <div class="admin-form-group"><label>Email</label><input type="text" value="${p.email}" oninput="updateField('personal.email', this.value)"></div>
                         <div class="admin-form-group"><label>Phone</label><input type="text" value="${p.phone}" oninput="updateField('personal.phone', this.value)"></div>
                     </div>
-                    <div class="admin-form-group"><label>Location</label><input type="text" value="${p.location}" oninput="updateField('personal.location', this.value)"></div>
                     
                     <h3 class="mt-4">Education</h3>
                     ${localData.education.map((e, i) => `
